@@ -2,73 +2,65 @@ import express from 'express';
 import { MongoClient } from 'mongodb';
 import 'dotenv/config';
 import cors from 'cors';
-import { data } from './seedData.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const PORT = 3000;
+// Setup __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Constants
+const PORT = process.env.PORT || 3000;
 const uri = process.env.MONGO_URI;
+
+// Create Express app
 const app = express();
-app.use(express.json())
+app.use(express.json());
+app.use(cors());
 
-const corsOptions = {
-  origin: 'http://localhost:5173',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-};
+// Entry function to connect to DB and start server
+async function init() {
+  try {
+    const client = await MongoClient.connect(uri);
+    const db = client.db();
+    console.log('Connected to MongoDB');
 
-app.use(cors(corsOptions));
+    const qCol = db.collection('q');
+    const blooms = db.collection('blooms');
 
-app.options('/grade/7', cors(corsOptions))
-
-
-const {qCol, blooms} = await MongoClient.connect(uri).then(conn => {
-    const db = conn.db();
-    console.log('connected to mongodb');
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
+    // Routes
+    app.get('/ping', (req, res) => {
+      res.status(200).json({ message: 'pong' });
     });
-    return db;
-}).then(db => {
-    const qCol = db.collection('q')
-    const blooms = db.collection('blooms')
-    return {qCol, blooms}
-})
 
-app.get('/ping', async (req, res) => {
-    return res.status(200).json({message: 'pong'})
-})
-app.get('/grade/:n', async (req, res) => {
-    try {
-        const {n} = req.params;
-        const docs = await blooms.find({gradeLevel: parseInt(n)}).sort({concept: 1}).toArray();
-        return res.status(200).json(docs)
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({error: error})
-    }
-})
+    app.get('/api/grade/:n', async (req, res) => {
+      try {
+        const { n } = req.params;
+        const docs = await blooms.find({ gradeLevel: parseInt(n) }).sort({ concept: 1 }).toArray();
+        res.status(200).json(docs);
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+      }
+    });
 
-app.get('/seed', async (req, res)=> {
-    try {
-        await blooms.insertMany(data);
-        console.log('success');
-        return res.json({message: 'success'})
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({error: error})
-    }
-})
-app.get('/clean', async (req, res)=> {
-    try {
-        await blooms.updateMany({gradeLevel: '7th'}, {$set: {gradeLevel: 7}});
-        await blooms.updateMany({gradeLevel: '6th'}, {$set: {gradeLevel: 6}});
-        await blooms.updateMany({gradeLevel: '5th'}, {$set: {gradeLevel: 5}});
-        await blooms.updateMany({gradeLevel: '4th'}, {$set: {gradeLevel: 4}});
-        await blooms.updateMany({gradeLevel: '3rd'}, {$set: {gradeLevel: 3}});
-        console.log('success');
-        return res.json({message: 'success'})
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({error: error})
-    }
-})
+    // Serve static Vue files
+    app.use(express.static(path.join(__dirname, 'dist')));
+
+    // Fallback for SPA routing
+    app.get('/*path', (req, res) => {
+      res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    });
+
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`Server is running at http://localhost:${PORT}`);
+    });
+
+  } catch (err) {
+    console.error('Failed to initialize server:', err);
+  }
+}
+
+// Start app
+init();
