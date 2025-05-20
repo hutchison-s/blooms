@@ -1,12 +1,25 @@
 import express from 'express';
 import { MongoClient } from 'mongodb';
 import 'dotenv/config';
+import cors from 'cors';
 import { data } from './seedData.js';
 
 const PORT = 3000;
 const uri = process.env.MONGO_URI;
 const app = express();
 app.use(express.json())
+
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+
+app.options('/grade/7', cors(corsOptions))
+
 
 const {qCol, blooms} = await MongoClient.connect(uri).then(conn => {
     const db = conn.db();
