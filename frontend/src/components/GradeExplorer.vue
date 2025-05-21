@@ -17,7 +17,7 @@
         <label for="subject" class="text-zinc-300 mr-2">Subject:</label>
         <select name="subject" id="subject" v-model="subject" class="text-zinc-300 border-1 border-zinc-300 p-1 rounded">
           <option value="All Subjects">All Subjects</option>
-          <option v-for="s of subjectList" :value="s">{{ s }}</option>
+          <option v-for="s of subjectList" :value="s" :key="s">{{ s }}</option>
         </select>
       </div>
     </div>
@@ -38,14 +38,15 @@ import type { Concept } from '@/types/global';
 import QuestionDepth from '@/components/QuestionDepth.vue';
 import logo from '@/assets/logo.png';
 
-const baseURL = 'http://localhost:3000' + '/api'
+// const baseURL = 'http://localhost:3000' + '/api'
+const baseURL = '/api'
 
 const grade = ref<number>(0)
 const concepts = ref<Concept[]>([])
 const selected = ref<Concept | undefined>()
 const subject = ref<string>('All Subjects')
 
-const url = computed<string>((prev)=>{
+const url = computed<string>(()=>{
   let newURL = baseURL + '/concepts';
   let startedQuery = false;
   if (grade.value !== 0 || subject.value !== 'All Subjects') {

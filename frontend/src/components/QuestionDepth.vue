@@ -6,7 +6,7 @@
             <button @click="$emit('reset')" class="absolute bottom-2 right-0 md:bottom-auto md:right-auto scale-90 md:scale-100 md:relative font-light text-xl border-1 border-zinc-300 rounded px-3 py-1">&larr; Go back</button>
         </div>
         <ul class="overflow-y-auto h-full" style="scroll-snap-type: y mandatory;">
-            <li v-for="level of bloomsLevels" class="px-2 py-12 grid gap-6 h-full shadow-2xl question-slide" :class="bgMap[level as LevelName]" style="scroll-snap-align: start;">
+            <li v-for="level of bloomsLevels" :key="level" class="px-2 py-12 grid gap-6 h-full shadow-2xl question-slide" :class="bgMap[level as LevelName]" style="scroll-snap-align: start;">
                 <h3 class="font-black text-4xl md:text-[6rem]">{{level.toUpperCase()}}</h3>
                 <p class="font-light text-2xl leading-relaxed ml-4 md:text-5xl px-[10vw] text-center">{{ concept[level] }}</p>
             </li>
@@ -31,12 +31,12 @@ import { bloomsLevels, slugToTitle } from '@/assets/helpers';
         'evaluation': ['bg-cyan-800', 'text-zinc-200']
     }
 
-    const baseURL = 'http://localhost:3000' + '/api/concepts'
-    const isLoading = ref<boolean>(true);
+    // const baseURL = 'http://localhost:3000' + '/api/concepts'
+    const baseURL = '/api'
     const concept = ref<Concept | null>(null)
 
     onMounted(async () => {
-        const response = await fetch(`${baseURL}/${conceptId}`)
+        const response = await fetch(`${baseURL}/concepts/${conceptId}`)
         concept.value = await response.json();
       });
 
