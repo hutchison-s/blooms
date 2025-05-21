@@ -1,10 +1,10 @@
 <template>
-  <section class="w-full h-full grid grid-rows-[10vh_80vh]">
+  <section class="w-full h-full grid grid-rows-[10dvh_80dvh]">
     <div class="bg-black p-2 w-full h-full flex gap-2 flex-wrap justify-evenly md:justify-start items-center">
       <div>
         <label for="grade" class="text-zinc-300 mr-2">Grade Level:</label>
         <select name="grade" id="grade" v-model.number="grade" placeholder="Choose a grade to explore" class="text-zinc-300 border-1 border-zinc-300 p-1 rounded">
-          <option value="0"></option>
+          <option value="0">All</option>
           <option value="3">3</option>
           <option value="4">4</option>
           <option value="5">5</option>
@@ -21,8 +21,8 @@
         </select>
       </div>
     </div>
-    <QuestionDepth v-if="selected" :concept="selected" @reset="handleReset"/>
-    <ConceptList v-else-if="filteredConcepts.length > 0" :concepts="filteredConcepts" @update="handleUpdate"/>
+    <QuestionDepth v-if="selected" :conceptId="selected._id" @reset="handleReset"/>
+    <ConceptList v-else-if="concepts.length > 0" :concepts="concepts" @update="handleUpdate"/>
     <div v-else class="w-full h-full grid place-items-center relative">
       <img :src="logo" alt="Bloom Explorer Logo" width="120px" height="120px" class="opacity-25 suggest">
       <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] border-10 border-b-transparent orbit border-black/10 rounded-full"></div>
@@ -32,30 +32,41 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import ConceptList from '@/components/ConceptList.vue';
 import type { Concept } from '@/types/global';
 import QuestionDepth from '@/components/QuestionDepth.vue';
 import logo from '@/assets/logo.png';
+
+const baseURL = 'http://localhost:3000' + '/api'
 
 const grade = ref<number>(0)
 const concepts = ref<Concept[]>([])
 const selected = ref<Concept | undefined>()
 const subject = ref<string>('All Subjects')
 
-const filteredConcepts = computed<Concept[]>(()=>{
-  if (subject.value === 'All Subjects') return concepts.value;
-  return concepts.value.filter(c => c.subjectArea == subject.value);
-})
-const subjectList = computed<string[]>(()=>{
-  const subjectSet = concepts.value.reduce(
-    (acc: Set<string>, concept: Concept)=>{
-      acc.add(concept.subjectArea);
-      return acc;
-    }, new Set<string>());
+const url = computed<string>((prev)=>{
+  let newURL = baseURL + '/concepts';
+  let startedQuery = false;
+  if (grade.value !== 0 || subject.value !== 'All Subjects') {
+    newURL += "?"
+    startedQuery = true;
+  }
+  const currentSubject = subject.value;
+  const currentGrade = grade.value;
+  if (currentGrade !== 0) {
+    newURL += `grade=${currentGrade}`;
+  }
 
-  return Array.from(subjectSet)
+  if (currentSubject !== 'All Subjects') {
+    newURL += `${startedQuery ? (currentGrade == 0 ? "" : "&") : '?'}subject=${currentSubject}`
+  }
+
+  return newURL;
+
 })
+
+const subjectList = ref<string[]>([])
 
 const handleUpdate = (c: Concept) => {
   selected.value = c;
@@ -63,25 +74,32 @@ const handleUpdate = (c: Concept) => {
 const handleReset = ()=>{
   selected.value = undefined;
 }
-watch(subject, handleReset)
-watch(grade, async () => {
-  const g = grade.value
-  if (g === 0) {
-    concepts.value = [];
-    selected.value = undefined;
-    return;
-  };
-  const items = await fetch(`/api/grade/${g}`)
-    .then((res) => res.json())
-    .then((items) => {
-      return items as Concept[]
-    })
-    .catch((err) => {
-      console.error(err)
-      return []
-    })
-  concepts.value = items
-  handleReset()
+
+watch(url, async ()=>{
+  await updateConcepts()
 })
+
+const updateConcepts = async () => {
+  try {
+    const res = await fetch(url.value);
+    const items = await res.json();
+    concepts.value = items;
+    selected.value = undefined;
+  } catch (err) {
+    console.error(err);
+    concepts.value = [];
+  }
+};
+
+onMounted(async ()=>{
+  await updateConcepts();
+  await fetch(baseURL+'/subjects').then(res => res.json()).then(subjects => subjectList.value = subjects);
+})
+
+// 👇 Only update subjects when grade changes
+watch([grade, subject], () => {
+  handleReset();
+});
+
 
 </script>

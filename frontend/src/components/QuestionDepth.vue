@@ -1,5 +1,6 @@
 <template>
-    <div class=" grid grid-rows-[20vh_1fr] md:grid-rows-[10vh_1fr] h-full">
+    <div v-if="!concept">loading...</div>
+    <div v-else class=" grid grid-rows-[20dvh_1fr] md:grid-rows-[10vh_1fr] h-full">
         <div class="relative px-2 bg-cyan-800 text-2xl text-zinc-300 w-full flex gap-x-20 flex-wrap items-center">
             <div><span class="text-cyan-200">Concept:</span> <span class="font-light">{{ slugToTitle(concept.concept) }}</span></div>
             <button @click="$emit('reset')" class="absolute bottom-2 right-0 md:bottom-auto md:right-auto scale-90 md:scale-100 md:relative font-light text-xl border-1 border-zinc-300 rounded px-3 py-1">&larr; Go back</button>
@@ -14,10 +15,11 @@
 </template>
 
 <script setup lang="ts">
+import {ref, onMounted} from 'vue';
 import type { Concept, LevelName } from '@/types/global';
 import { bloomsLevels, slugToTitle } from '@/assets/helpers';
-    defineProps<{
-        concept: Concept
+    const {conceptId} = defineProps<{
+        conceptId: string
     }>()
     defineEmits<{reset: []}>()
     const bgMap: Record<LevelName, string[]> = {
@@ -28,6 +30,15 @@ import { bloomsLevels, slugToTitle } from '@/assets/helpers';
         'synthesis': ['bg-cyan-700', 'text-zinc-200'],
         'evaluation': ['bg-cyan-800', 'text-zinc-200']
     }
+
+    const baseURL = 'http://localhost:3000' + '/api/concepts'
+    const isLoading = ref<boolean>(true);
+    const concept = ref<Concept | null>(null)
+
+    onMounted(async () => {
+        const response = await fetch(`${baseURL}/${conceptId}`)
+        concept.value = await response.json();
+      });
 
     
 
