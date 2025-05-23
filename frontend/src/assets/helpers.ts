@@ -9,4 +9,26 @@ export const bloomsLevels: (keyof Concept)[] = [
     'evaluation',
 ]
 
-export const slugToTitle = (slug: string) => slug.split('-').map(w => w[0].toUpperCase()+w.substring(1)).join(' ')
+export const slugToTitle = (slug: string) => slug.split('-').map(w => w[0].toUpperCase()+w.substring(1)).join(' ');
+
+export class QueryURLBuilder extends URL {
+  constructor(url: string) {
+    super(url)
+    return this;
+  }
+  addParam(field: string, val?: string | number) {
+    if (!val) return;
+    const sp = new URLSearchParams(this.search);
+    sp.set(field, String(val));
+    this.search = sp.toString();
+    return this;
+  }
+  removeParam(field: string) {
+    const sp = new URLSearchParams(this.search);
+    if (sp.has(field)) {
+      sp.delete(field);
+    };
+    this.search = sp.toString();
+    return this;
+  }
+}

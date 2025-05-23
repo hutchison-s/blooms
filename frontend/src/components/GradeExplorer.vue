@@ -37,6 +37,7 @@ import ConceptList from '@/components/ConceptList.vue';
 import type { Concept } from '@/types/global';
 import QuestionDepth from '@/components/QuestionDepth.vue';
 import logo from '@/assets/logo.png';
+import { QueryURLBuilder } from '@/assets/helpers';
 
 // const baseURL = 'http://localhost:3000' + '/api'
 const baseURL = '/api'
@@ -46,25 +47,12 @@ const concepts = ref<Concept[]>([])
 const selected = ref<Concept | undefined>()
 const subject = ref<string>('All Subjects')
 
+
+//updated logic using custom class
 const url = computed<string>(()=>{
-  let newURL = baseURL + '/concepts';
-  let startedQuery = false;
-  if (grade.value !== 0 || subject.value !== 'All Subjects') {
-    newURL += "?"
-    startedQuery = true;
-  }
-  const currentSubject = subject.value;
-  const currentGrade = grade.value;
-  if (currentGrade !== 0) {
-    newURL += `grade=${currentGrade}`;
-  }
-
-  if (currentSubject !== 'All Subjects') {
-    newURL += `${startedQuery ? (currentGrade == 0 ? "" : "&") : '?'}subject=${currentSubject}`
-  }
-
-  return newURL;
-
+  const newURL = new QueryURLBuilder(baseURL + '/concepts');
+  newURL.addParam('grade', grade.value)?.addParam('subject', subject.value);
+  return newURL.toString();
 })
 
 const subjectList = ref<string[]>([])
