@@ -17,7 +17,7 @@ export class QueryURLBuilder extends URL {
     return this;
   }
   addParam(field: string, val?: string | number) {
-    if (!val) return;
+    if (!val) return this;
     const sp = new URLSearchParams(this.search);
     sp.set(field, String(val));
     this.search = sp.toString();

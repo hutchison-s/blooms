@@ -1,10 +1,10 @@
 <template>
-  <section class="w-full h-full grid grid-rows-[10dvh_80dvh]">
-    <div class="bg-black p-2 w-full h-full flex gap-2 flex-wrap justify-evenly md:justify-start items-center">
-      <div>
-        <label for="grade" class="text-zinc-300 mr-2">Grade Level:</label>
-        <select name="grade" id="grade" v-model.number="grade" placeholder="Choose a grade to explore" class="text-zinc-300 border-1 border-zinc-300 p-1 rounded">
-          <option value="0">All</option>
+  <section class="w-full h-full grid grid-rows-[14dvh_74dvh]">
+    <div v-if="!selected" class="bg-black p-2 md:px-4 w-full h-full flex gap-x-2 gap-y-1 flex-wrap sm:flex-nowrap justify-center sm:justify-start items-center">
+      <div class="grow sm:grow-0">
+        <label for="grade" class="text-zinc-300 mr-2 hidden"></label>
+        <select name="grade" id="grade" v-model.number="grade" aria-label="grade level" class="w-full text-zinc-300 border-1 border-zinc-300 p-1 rounded">
+          <option :value="undefined">All Grades</option>
           <option value="3">3</option>
           <option value="4">4</option>
           <option value="5">5</option>
@@ -13,21 +13,20 @@
           <option value="8">8</option>
         </select>
       </div>
-      <div>
-        <label for="subject" class="text-zinc-300 mr-2">Subject:</label>
-        <select name="subject" id="subject" v-model="subject" class="text-zinc-300 border-1 border-zinc-300 p-1 rounded">
-          <option value="All Subjects">All Subjects</option>
+      <div class="grow sm:grow-0">
+        <label for="subject" class="text-zinc-300 mr-2 hidden"></label>
+        <select name="subject" id="subject" v-model="subject" aria-label="Subject filter" class="w-full text-zinc-300 border-1 border-zinc-300 p-1 rounded">
+          <option :value="undefined">All Subjects</option>
           <option v-for="s of subjectList" :value="s" :key="s">{{ s }}</option>
         </select>
+      </div>
+      <div>
+        <SearchModal @update="handleSearchUpdate"/>
       </div>
     </div>
     <QuestionDepth v-if="selected" :conceptId="selected._id" @reset="handleReset"/>
     <ConceptList v-else-if="concepts.length > 0" :concepts="concepts" @update="handleUpdate"/>
-    <div v-else class="w-full h-full grid place-items-center relative">
-      <img :src="logo" alt="Bloom Explorer Logo" width="120px" height="120px" class="opacity-25 suggest">
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[200px] border-10 border-b-transparent orbit border-black/10 rounded-full"></div>
-      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] border-10 border-l-transparent orbit-outter border-black/10 rounded-full"></div>
-    </div>
+    
   </section>
 </template>
 
@@ -36,22 +35,27 @@ import { computed, onMounted, ref, watch } from 'vue'
 import ConceptList from '@/components/ConceptList.vue';
 import type { Concept } from '@/types/global';
 import QuestionDepth from '@/components/QuestionDepth.vue';
-import logo from '@/assets/logo.png';
 import { QueryURLBuilder } from '@/assets/helpers';
+import SearchModal from '@/components/SearchModal.vue';
 
-// const baseURL = 'http://localhost:3000' + '/api'
-const baseURL = '/api'
+const baseURL = 'https://www.bloomexplorer.xyz/api';
+// const baseURL = '/api'
 
-const grade = ref<number>(0)
+const grade = ref<number | undefined>(undefined)
 const concepts = ref<Concept[]>([])
 const selected = ref<Concept | undefined>()
-const subject = ref<string>('All Subjects')
+const subject = ref<string | undefined>(undefined)
+const search = ref<string>('');
 
 
 //updated logic using custom class
 const url = computed<string>(()=>{
+  const g = grade.value;
+  const s = subject.value;
+  const q = search.value;
   const newURL = new QueryURLBuilder(baseURL + '/concepts');
-  newURL.addParam('grade', grade.value)?.addParam('subject', subject.value);
+  newURL.addParam('grade', g).addParam('subject', s).addParam('search', q);
+  console.log(newURL.toString())
   return newURL.toString();
 })
 
@@ -62,6 +66,10 @@ const handleUpdate = (c: Concept) => {
 }
 const handleReset = ()=>{
   selected.value = undefined;
+}
+const handleSearchUpdate = (val: string)=>{
+  
+  search.value = val;
 }
 
 watch(url, async ()=>{
@@ -86,7 +94,7 @@ onMounted(async ()=>{
 })
 
 // 👇 Only update subjects when grade changes
-watch([grade, subject], () => {
+watch([grade, subject, search], () => {
   handleReset();
 });
 
