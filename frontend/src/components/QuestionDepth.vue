@@ -5,7 +5,7 @@
             <div class="w-full flex justify-end sm:w-fit"><button @click="$emit('reset')" class="font-light text-sm md:text-xl border-1 border-zinc-300 rounded px-3 py-1">&larr; Go back</button></div>
         </div>
         <ul class="overflow-y-auto h-full" style="scroll-snap-type: y mandatory;">
-            <li v-for="level of bloomsLevels" :key="level" class="px-2 py-12 grid gap-6 h-full shadow-2xl question-slide" :class="bgMap[level as LevelName]" style="scroll-snap-align: start;">
+            <li v-for="level of bloomsLevels" :key="level" class="px-2 py-12 grid gap-6 h-full shadow-2xl question-slide" :class="levelColorMap[level]" style="scroll-snap-align: start;">
                 <h3 class="font-black text-4xl md:text-[6rem]">{{level.toUpperCase()}}</h3>
                 <p class="font-light text-2xl leading-relaxed ml-4 md:text-5xl px-[10vw] text-center">{{ concept[level] }}</p>
             </li>
@@ -17,21 +17,14 @@
 
 <script setup lang="ts">
 import {ref, onMounted, computed} from 'vue';
-import type { Concept, LevelName } from '@/types/global';
-import { bloomsLevels, slugToTitle } from '@/assets/helpers';
+import type { Concept } from '@/types/global';
+import { bloomsLevels, slugToTitle, levelColorMap } from '@/assets/helpers';
 import Loader from '@/components/Loader.vue';
     const {conceptId} = defineProps<{
         conceptId: string
     }>()
     defineEmits<{reset: []}>()
-    const bgMap: Record<LevelName, string[]> = {
-        'knowledge': ['bg-cyan-300', 'text-zinc-800'],
-        'comprehension': ['bg-cyan-400', 'text-zinc-800'],
-        'application': ['bg-cyan-500', 'text-zinc-800'],
-        'analysis': ['bg-cyan-600', 'text-zinc-200'],
-        'synthesis': ['bg-cyan-700', 'text-zinc-200'],
-        'evaluation': ['bg-cyan-800', 'text-zinc-200']
-    }
+    
 
 const baseURL = 'https://www.bloomexplorer.xyz/api';    
 // const baseURL = '/api'
