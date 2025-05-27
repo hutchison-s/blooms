@@ -18,7 +18,7 @@
     const route = useRoute();
     const router = useRouter();
 
-    const baseURL = import.meta.env.VITE_API_BASE || 'https://www.bloomexplorer.xyz/api';
+    const baseURL = import.meta.env.VITE_API_BASE || 'https://www.bloomexplorer.xyz/api/concepts';
 
     const concepts = ref<ConceptPreview[]>([]);
     const nextPageLink = ref<string | null>(null);
