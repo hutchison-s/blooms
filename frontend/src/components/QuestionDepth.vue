@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import type {Concept} from '@/types/global';
 import { bloomsLevels, slugToTitle, levelColorMap } from '@/assets/helpers';
-import Loader from '@/components/Loader.vue';
+import Loader from '@/components/LogoLoader.vue';
 import {useRouter} from 'vue-router'
     const {concept} = defineProps<{
         concept?: Concept

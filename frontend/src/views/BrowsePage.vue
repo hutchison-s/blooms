@@ -39,15 +39,23 @@
             .addParam('subject', q.subject)
             .addParam('search', q.search)
             .toString()
-        const response = await fetch(url).then(res => res.json())
-        if (response.success) {
-            concepts.value = response.data;
-            nextPageLink.value = response.pagination.nextPage;
-            conceptStatus.value = 'ready';
-        } else {
+        
+        try {
+            const response = await fetch(url).then(res => res.json())
+            if (response.success) {
+                concepts.value = response.data;
+                nextPageLink.value = response.pagination.nextPage;
+                conceptStatus.value = 'ready';
+            } else {
+                concepts.value = [];
+                nextPageLink.value = null;
+                conceptStatus.value = 'error'
+            }
+        } catch (error) {
+            console.error(error);
             concepts.value = [];
             nextPageLink.value = null;
-            conceptStatus.value = 'error'
+            conceptStatus.value = 'error';
         }
         router.replace({query: q})
         
@@ -56,18 +64,25 @@
     onMounted(async () => {
         const query = route.query;
         const url = new QueryURLBuilder(baseURL)
-        for (let k in query) {
+        for (const k in query) {
             const val = query[k]?.valueOf();
             if (typeof val !== 'object') {
                 url.addParam(k, val);
             }
         }
-        const response = await fetch(url.toString()).then(res => res.json());
-        if (response.success) {
-            concepts.value = response.data;
-            nextPageLink.value = response.pagination.nextPage;
-            conceptStatus.value = 'ready';
-        } else {
+        try {
+            const response = await fetch(url.toString()).then(res => res.json());
+            if (response.success) {
+                concepts.value = response.data;
+                nextPageLink.value = response.pagination.nextPage;
+                conceptStatus.value = 'ready';
+            } else {
+                concepts.value = [];
+                nextPageLink.value = null;
+                conceptStatus.value = 'error';
+            }
+        } catch (error) {
+            console.error(error);
             concepts.value = [];
             nextPageLink.value = null;
             conceptStatus.value = 'error';

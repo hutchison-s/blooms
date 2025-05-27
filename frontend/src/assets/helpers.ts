@@ -1,4 +1,4 @@
-import type { Concept, BloomLevelType, BloomLevelName, Subject } from "@/types/global";
+import type { Concept, BloomLevelType, Subject } from "@/types/global";
 
 export const ALL_SUBJECTS: Subject[] = [
   'Math', 'Science', 'Art', 'Health', 'Language Arts', 'Music', 'Social Studies', 'Technology'

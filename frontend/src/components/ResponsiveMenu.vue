@@ -48,12 +48,10 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import { useRoute } from 'vue-router';
 import menuIcon from '@/assets/menu.svg';
 import closeIcon from '@/assets/close.svg';
 
 const isOpen = ref(false);
-const route = useRoute();
 
 const toggleOpen = () => {
   isOpen.value = !isOpen.value;

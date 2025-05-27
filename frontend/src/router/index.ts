@@ -1,25 +1,25 @@
 // src/router/index.ts
 import { createRouter, createWebHistory } from 'vue-router';
-import Home from '../views/Home.vue';
-import About from '../views/About.vue';
+import HomePage from '../views/HomePage.vue';
+import AboutPage from '../views/AboutPage.vue';
 import ConceptPage from '@/views/ConceptPage.vue';
-import Browse from '@/views/Browse.vue';
+import BrowsePage from '@/views/BrowsePage.vue';
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
+    component: HomePage,
   },
   {
     path: '/explore',
     name: 'Explore',
-    component: Browse
+    component: BrowsePage
   },
   {
     path: '/about',
     name: 'About',
-    component: About,
+    component: AboutPage,
   },
   {
     path: '/concepts/:grade/:subject/:slug',
