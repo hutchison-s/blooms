@@ -5,7 +5,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import connectMongoose from './utils/mongo.js';
 import ConceptRouter from './routes/concept.router.js';
-import { getSubjects } from './controllers/concept.controller.js';
 
 
 // Setup __dirname in ES modules
@@ -25,7 +24,6 @@ connectMongoose();
 
 // Connect router to concepts endpoint
 app.use('/api/concepts', ConceptRouter);
-app.get('/api/subjects', getSubjects)
 
 // Serve static Vue files
 app.use(express.static(path.join(__dirname, 'dist')));

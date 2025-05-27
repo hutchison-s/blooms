@@ -1,80 +1,179 @@
-import concept from "../models/concept.js";
+import Concept from "../models/Concept.js";
 
-const adminCode = process.env.ADMIN_CODE;
+const DEFAULT_LIMIT = 50;
 
-if (!adminCode) {
-    throw new Error('Missing admin code');
-}
-
+/*
+    General database endpoint for concepts.
+    - Supports optional query parameters: grade, subject, and search
+    - Uses pagination with defaults: page = 1, limit = 50
+    - Enforces limit max of DEFAULT_LIMIT
+    - Validates numeric format of page and limit
+    - Validates max length of 100 for search term
+    - Returns results in 'data' with pagination metadata
+*/
 export async function find(req, res) {
-    const {subject, search, grade} = req.query;
-        const query = {}
-        if (grade) {
-            query.gradeLevel = parseInt(grade);
-        }
-        if (subject) {
-            query.subjectArea = { $regex: new RegExp(subject, 'i') };
+    const baseUrl = `${req.protocol}://${req.get('host')}/api/concepts`;
+    const { subject, search, grade, page = 1, limit = DEFAULT_LIMIT } = req.query;
+
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const parsedGrade = grade ? parseInt(grade) : undefined;
+
+
+    if (!Number.isInteger(pageNum) || pageNum < 1) {
+        return res.status(400).json({ success: false, error: 'Invalid page number' });
+    }
+    if (!Number.isInteger(limitNum) || limitNum < 1 || limitNum > DEFAULT_LIMIT) {
+        return res.status(400).json({ success: false, error: `Limit must be between 1 and ${DEFAULT_LIMIT}` });
+    }
+    if (search && search.length > 100) {
+        return res.status(400).json({ success: false, error: 'Search term too long' });
+    }
+    if (grade && (!Number.isInteger(parsedGrade) || parsedGrade < 1 || parsedGrade > 12)) {
+        return res.status(400).json({ success: false, error: 'Grade must be a number between 1 and 12' });
+    }
+
+    const skip = (pageNum - 1) * limitNum;
+    const filter = {};
+
+    if (parsedGrade !== undefined) {
+        filter.gradeLevel = parsedGrade;
+    }
+    if (subject) {
+        filter.subjectArea = { $regex: new RegExp(escapeRegex(subject), 'i') };
+    }
+    if (search) {
+        filter.$text = { $search: search };
+    }
+
+    try {
+        const totalItems = await Concept.countDocuments(filter).exec();
+        const totalPages = Math.ceil(totalItems / limitNum);
+        const hasNext = pageNum < totalPages;
+        const overMax = pageNum > totalPages && totalItems > 0;
+
+        const results = await Concept.find(
+            filter,
+            '_id gradeLevel subjectArea concept',
+            {
+                limit: limitNum,
+                skip,
+                sort: { concept: 1, gradeLevel: 1, subjectArea: 1 }
+            }
+        ).lean().exec();
+
+        const resultsWithUrl = results.map(doc => ({
+            ...doc,
+            url: `${baseUrl}/${doc.gradeLevel}/${doc.subjectArea}/${doc.concept}`
+        }));
+
+        const nextQuery = new URLSearchParams({...req.query});
+        if (hasNext) {
+            nextQuery.set('page', pageNum + 1);
         }
 
-        if (search) {
-            query.$text = { $search: search }; // must be plain string
+        let message = '';
+
+        if (totalItems === 0) {
+            message = 'No matching documents found.';
+        } else if (overMax) {
+            message = 'No matching documents. Page parameter exceeds total matching pages.';
+        } else {
+            message = `${results.length} matching documents returned.`;
         }
-    try {
-        const results = await concept.find(query, '_id gradeLevel subjectArea concept', {limit: 100}).exec();
-        return res.status(200).json(results);
+        return res.status(200).json({
+            success: true,
+            message: message,
+            data: resultsWithUrl,
+            count: results.length,
+            pagination: {
+                currentPage: pageNum,
+                limit: limitNum,
+                totalItems,
+                totalPages,
+                nextPage: hasNext ? `${baseUrl}?${nextQuery.toString()}` : null            
+            }
+        });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({message: 'Could not execute DB function.'})
+        console.error('Error in find():', error);
+        return res.status(500).json({
+            success: false,
+            error: `Error processing request from database: ${error.message || error}`
+        });
     }
 }
+
+/*
+    Endpoint for retrieving a single concept document.
+    - Requires grade, subject, and slug parameters
+    - Validates grade as a number between 1 and 12
+    - Returns 404 if document is not found
+*/
 export async function findOne(req, res) {
+    const { grade, subject, slug } = req.params;
+
+    if (!grade || !subject || !slug) {
+        return res.status(400).json({ success: false, error: 'Missing required parameters' });
+    }
+
+    const parsedGrade = parseInt(grade);
+
+    if (!Number.isInteger(parsedGrade) || parsedGrade < 1 || parsedGrade > 12) {
+        return res.status(400).json({ success: false, error: 'Invalid grade parameter' });
+    }
+
     try {
-        const {id} = req.params;
-        const results = await concept.findById(id).exec();
-        return res.status(200).json(results);
+        const result = await Concept.findOne({
+            gradeLevel: parsedGrade,
+            subjectArea: subject,
+            concept: slug
+        }).lean();
+
+        if (!result) {
+            return res.status(404).json({ success: false, error: 'No document found' });
+        }
+
+        return res.status(200).json({ success: true, data: result });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({message: 'Could not execute DB function.'})
+        console.error('Error in findOne():', error);
+        return res.status(500).json({
+            success: false,
+            error: `Error retrieving document: ${error.message || error}`
+        });
     }
 }
 
-export async function getSubjects(req, res) {
+/*
+    Health check endpoint.
+    - Confirms database is connected and contains at least one document
+    - Returns uptime and timestamp
+*/
+export async function healthCheck(req, res) {
     try {
-        const results = await concept.find({}, 'subjectArea').exec();
-        const setResults = new Set(results.map(s => s.subjectArea));
-        return res.status(200).json(Array.from(setResults));
+        const doc = await Concept.findOne({}).lean();
+        if (!doc) {
+            return res.status(500).json({
+                success: false,
+                error: 'Database is empty',
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            uptime: process.uptime(),
+            timestamp: new Date().toISOString()
+        });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({message: 'Could not execute DB function.'})
+        console.error('Error in healthCheck():', error);
+        return res.status(500).json({
+            success: false,
+            error: `Database health check failed: ${error.message || error}`,
+            timestamp: new Date().toISOString()
+        });
     }
 }
 
-export async function seed(req, res) {
-    const data = req.body;
-    const {authorization} = req.headers;
-    const code = authorization.split(' ')[1];
-    if (code !== adminCode) {
-        return res.status(403).json({message: 'Forbidden'})
-    }
-    try {
-        const results = await concept.insertMany(data, {ordered: false});
-        return res.status(200).send('successfully added documents');
-    } catch (error) {
-        if (error.code === 11000) {
-            console.log(error.writeErrors)
-            return res.status(200).json({message: `Inserted ${error.insertedDocs.length} documents, and skipped ${error.writeErrors.length} duplicates`})
-        } 
-        console.error(error);
-        return res.status(500).json({message: 'Could not execute DB function.'})
-    }
-}
-
-export async function purge(req, res) {
-    const {authorization} = req.headers;
-    const code = authorization.split(' ')[1];
-    if (code !== adminCode) {
-        return res.status(403).json({message: 'Forbidden'})
-    }
-    await concept.deleteMany({});
-    return res.status(200).json({message: 'purged'})
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

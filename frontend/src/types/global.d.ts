@@ -10,7 +10,10 @@ export interface Concept {
     analysis: BloomLevelName,
     synthesis: BloomLevelName,
     evaluation: BloomLevelName,
+    url?: string
 }
+
+export type ConceptPreview = Pick<Concept, '_id' | 'gradeLevel' | 'subjectArea' | 'concept' | 'url'>
 
 export type BloomLevelName = 
     'knowledge'
@@ -35,3 +38,4 @@ export type BloomLevelType = {
   keywords: string;
   example: string;
 };
+

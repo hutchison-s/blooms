@@ -1,4 +1,11 @@
-import type { Concept, BloomLevelType, BloomLevelName } from "@/types/global";
+import type { Concept, BloomLevelType, BloomLevelName, Subject } from "@/types/global";
+
+export const ALL_SUBJECTS: Subject[] = [
+  'Math', 'Science', 'Art', 'Health', 'Language Arts', 'Music', 'Social Studies', 'Technology'
+]
+export const ALL_GRADES: number[] = [
+  3, 4, 5, 6, 7, 8
+]
 
 export const bloomsLevels: (keyof Concept)[] = [
     'knowledge',
@@ -18,6 +25,26 @@ export const levelColorMap: Record<string, string[]> = {
         'evaluation': ['bg-cyan-800', 'text-zinc-200']
     }
 
+export const toOrdinal = (n: number): string => {
+  if (n < 1 || n > 12) return String(n);
+  const suffixes = ['', 'st', 'nd', 'rd'];
+  const suffix = n < 4 ? suffixes[n] : 'th';
+  return String(n + suffix);
+}
+
+export const gradeColorMap: Record<number, string> = {
+  3: 'text-red-400',
+  4: 'text-orange-300',
+  5: 'text-yellow-300',
+  6: 'text-lime-300',
+  7: 'text-emerald-300',
+  8: 'text-sky-300',
+  9: 'text-indigo-300',
+  10: 'text-purple-300',
+  11: 'text-pink-300',
+  12: 'text-rose-300'
+};
+
 export const slugToTitle = (slug: string) => slug.split('-').map(w => w[0].toUpperCase()+w.substring(1)).join(' ');
 
 export class QueryURLBuilder extends URL {
@@ -26,7 +53,7 @@ export class QueryURLBuilder extends URL {
     return this;
   }
   addParam(field: string, val?: string | number) {
-    if (!val) return this;
+    if (!val || val == '') return this;
     const sp = new URLSearchParams(this.search);
     sp.set(field, String(val));
     this.search = sp.toString();

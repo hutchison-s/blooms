@@ -1,4 +1,4 @@
-import mongoose, {Schema, syncIndexes} from "mongoose";
+import mongoose, {Schema} from "mongoose";
 
 const Concept = new Schema({
     timestamp: String,
