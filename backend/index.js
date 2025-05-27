@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import connectMongoose from './utils/mongo.js';
 import ConceptRouter from './routes/concept.router.js';
+import AdminRouter from './routes/admin.router.js';
 
 
 // Setup __dirname in ES modules
@@ -21,6 +22,9 @@ app.use(cors());
 
 // Connect to DB
 connectMongoose();
+
+// // Connect router to admin endpoint
+// app.use('/api/admin', AdminRouter);
 
 // Connect router to concepts endpoint
 app.use('/api/concepts', ConceptRouter);
