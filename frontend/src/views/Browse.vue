@@ -3,7 +3,7 @@
 <template>
   <section class="w-full h-full grid grid-rows-[14dvh_74dvh]">
     <FilterBar :grade-list="ALL_GRADES" :subject-list="ALL_SUBJECTS" @change="handleFilterChange"/>
-    <ConceptList :concepts="concepts" :nextPageLink="nextPageLink" @next="getNextPage"/>
+    <ConceptList :concepts="concepts" :nextPageLink="nextPageLink" :status="conceptStatus" @next="getNextPage"/>
     </section>
 </template>
 
@@ -22,6 +22,7 @@
 
     const concepts = ref<ConceptPreview[]>([]);
     const nextPageLink = ref<string | null>(null);
+    const conceptStatus = ref<'loading' | 'ready' | 'error'>('loading');
 
     const getNextPage = async () => {
         if (!nextPageLink.value) return;
@@ -32,6 +33,7 @@
     }
 
     const handleFilterChange = async (q: {grade?: string, subject?: string, search?: string}) => {
+        conceptStatus.value = 'loading'
         const url = new QueryURLBuilder(baseURL)
             .addParam('grade', q.grade)
             .addParam('subject', q.subject)
@@ -41,6 +43,11 @@
         if (response.success) {
             concepts.value = response.data;
             nextPageLink.value = response.pagination.nextPage;
+            conceptStatus.value = 'ready';
+        } else {
+            concepts.value = [];
+            nextPageLink.value = null;
+            conceptStatus.value = 'error'
         }
         router.replace({query: q})
         
@@ -59,6 +66,11 @@
         if (response.success) {
             concepts.value = response.data;
             nextPageLink.value = response.pagination.nextPage;
+            conceptStatus.value = 'ready';
+        } else {
+            concepts.value = [];
+            nextPageLink.value = null;
+            conceptStatus.value = 'error';
         }
     })
 

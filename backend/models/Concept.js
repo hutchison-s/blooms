@@ -14,6 +14,8 @@ const Concept = new Schema({
 })
 
 Concept.index({gradeLevel: 1, subjectArea: 1, concept: 1}, {unique: true})
+Concept.index({subjectArea: 1})
+Concept.index({gradeLevel: 1})
 Concept.index({subjectArea: 'text', concept: 'text', knowledge: 'text', comprehension: 'text', application: 'text', analysis: 'text', synthesis: 'text', evaluation: 'text'});
 
 export default mongoose.model('Concept', Concept)

@@ -144,6 +144,161 @@ export async function findOne(req, res) {
 }
 
 /*
+    Endpoint for retrieving database info on subject areas
+    - Returns nested object with count, url, and grade level sub-aggregations with count and url
+*/
+export async function getAllSubjects(req, res) {
+    const baseUrl = `${req.protocol}://${req.get('host')}/api/concepts`;
+    try {
+        const summary = await Concept.aggregate([
+            {
+                $match: {
+                    subjectArea: { $ne: null },
+                    gradeLevel: { $ne: null }
+                }
+            },
+            {
+                $unwind: "$gradeLevel"
+            },
+            {
+                $group: {
+                _id: {
+                    subjectArea: "$subjectArea",
+                    gradeLevel: "$gradeLevel"
+                },
+                count: { $sum: 1 }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id.subjectArea",
+                    gradeLevels: {
+                        $push: {
+                            gradeLevel: "$_id.gradeLevel",
+                            count: "$count"
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    subjectArea: "$_id",
+                    count: "$count",
+                    gradeLevels: 1
+                }
+            },
+            {
+                $sort: { subjectArea: 1 }
+            }
+        ])
+        return res.status(200).json({
+            success: true,
+            message: `${summary.length} subjects found in database.`,
+            count: summary.length,
+            data: summary.reduce((subjects, s)=>{
+                subjects[s.subjectArea] = {
+                    count: s.count,
+                    url: `${baseUrl}?subject=${s.subjectArea.toLowerCase()}`,
+                    gradeLevels: s.gradeLevels.reduce((grades, g)=>{
+                        grades[g.gradeLevel] = {
+                            count: g.count,
+                            url: `${baseUrl}?grade=${g.gradeLevel}&subject=${encodeURIComponent(s.subjectArea.toLowerCase())}`
+                        };
+                        
+                        return grades;
+                    }, {})
+                };
+                return subjects;
+            }, {})
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: `Error retrieving information: ${error.message || error}`
+        });
+    }
+}
+
+/*
+    Endpoint for retrieving database info on grade levels
+    - Returns nested object with count, url, and grade level sub-aggregations with count and url
+*/
+export async function getAllGrades(req, res) {
+    const baseUrl = `${req.protocol}://${req.get('host')}/api/concepts`;
+    try {
+        const summary = await Concept.aggregate([
+            {
+                $match: {
+                    subjectArea: { $ne: null },
+                    gradeLevel: { $ne: null }
+                }
+            },
+            {
+                $unwind: "$subjectArea"
+            },
+            {
+                $group: {
+                _id: {
+                    gradeLevel: "$gradeLevel",
+                    subjectArea: "$subjectArea"
+                    
+                },
+                count: { $sum: 1 }
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id.gradeLevel",
+                    subjectAreas: {
+                        $push: {
+                            subjectArea: "$_id.subjectArea",
+                            count: "$count"
+                        }
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    gradeLevel: "$_id",
+                    count: "$count",
+                    subjectAreas: 1
+                }
+            },
+            {
+                $sort: { gradeLevel: 1 }
+            }
+        ])
+        return res.status(200).json({
+            success: true,
+            message: `${summary.length} grade levels found in database.`,
+            count: summary.length,
+            data: summary.reduce((grades, g)=>{
+                grades[g.gradeLevel] = {
+                    count: g.count,
+                    url: `${baseUrl}?grade=${g.gradeLevel}`,
+                    subjectAreas: g.subjectAreas.reduce((subjects, s)=>{
+                        subjects[s.subjectArea] = {
+                            count: s.count,
+                            url: `${baseUrl}?grade=${g.gradeLevel}&subject=${encodeURIComponent(s.subjectArea.toLowerCase())}`
+                        };
+                        
+                        return subjects;
+                    }, {})
+                };
+                return grades;
+            }, {})
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            error: `Error retrieving information: ${error.message || error}`
+        });
+    }
+}
+
+/*
     Health check endpoint.
     - Confirms database is connected and contains at least one document
     - Returns uptime and timestamp
