@@ -332,3 +332,4 @@ export async function healthCheck(req, res) {
 function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
