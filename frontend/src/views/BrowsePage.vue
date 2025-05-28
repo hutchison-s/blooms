@@ -32,12 +32,14 @@
         nextPageLink.value = nextData.pagination.nextPage;
     }
 
-    const handleFilterChange = async (q: {grade?: string, subject?: string, search?: string}) => {
+    const handleFilterChange = async (q: {grade?: string, subject?: string, search?: string, sortby: {sortby: string, ascending: string}}) => {
         conceptStatus.value = 'loading'
         const url = new QueryURLBuilder(baseURL)
             .addParam('grade', q.grade)
             .addParam('subject', q.subject)
             .addParam('search', q.search)
+            .addParam('sortby', q.sortby.sortby)
+            .addParam('ascending', q.sortby.ascending)
             .toString()
         
         try {
@@ -57,19 +59,18 @@
             nextPageLink.value = null;
             conceptStatus.value = 'error';
         }
-        router.replace({query: q})
+        router.replace({query: {...q, sortby: q.sortby.sortby, ascending: q.sortby.ascending}})
         
     }
 
     onMounted(async () => {
         const query = route.query;
         const url = new QueryURLBuilder(baseURL)
-        for (const k in query) {
-            const val = query[k]?.valueOf();
-            if (typeof val !== 'object') {
-                url.addParam(k, val);
-            }
-        }
+            .addParam('grade', query.grade ? query.grade.valueOf() : undefined)
+            .addParam('subject', query.subject ? query.subject.valueOf() : undefined)
+            .addParam('search', query.search ? query.search.valueOf() : undefined)
+            .addParam('sortby', query.sortby ? query.sortby.valueOf() : undefined)
+            .addParam('ascending', query.ascending ? query.ascending.valueOf() : undefined)
         try {
             const response = await fetch(url.toString()).then(res => res.json());
             if (response.success) {

@@ -31,7 +31,7 @@ connectMongoose();
 // Serve Swagger UI at /api-docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
-// // Connect router to admin endpoint
+// Connect router to admin endpoint
 // app.use('/api/admin', AdminRouter);
 
 // Connect router to concepts endpoint

@@ -1,6 +1,8 @@
 import Concept from "../models/Concept.js";
 
 const DEFAULT_LIMIT = 50;
+const SORTS = ['concept', 'gradeLevel', 'subjectArea']
+const BOOLS = ['false', 'true']
 
 /*
     General database endpoint for concepts.
@@ -13,7 +15,7 @@ const DEFAULT_LIMIT = 50;
 */
 export async function find(req, res) {
     const baseUrl = `${req.protocol}://${req.get('host')}/api/concepts`;
-    const { subject, search, grade, page = 1, limit = DEFAULT_LIMIT } = req.query;
+    const { subject, search, grade, sortby = 'concept', ascending = 'true', page = 1, limit = DEFAULT_LIMIT } = req.query;
 
     const pageNum = Number(page);
     const limitNum = Number(limit);
@@ -26,6 +28,12 @@ export async function find(req, res) {
     if (!Number.isInteger(limitNum) || limitNum < 1 || limitNum > DEFAULT_LIMIT) {
         return res.status(400).json({ success: false, error: `Limit must be between 1 and ${DEFAULT_LIMIT}` });
     }
+    if (sortby && !SORTS.includes(sortby)) {
+        return res.status(400).json({ success: false, error: 'Invalid sort parameter' });
+    }
+    if (ascending && !BOOLS.includes(ascending)) {
+        return res.status(400).json({ success: false, error: 'Invalid sort order parameter' });
+    }
     if (search && search.length > 100) {
         return res.status(400).json({ success: false, error: 'Search term too long' });
     }
@@ -33,6 +41,8 @@ export async function find(req, res) {
         return res.status(400).json({ success: false, error: 'Grade must be a number between 1 and 12' });
     }
 
+    const sorter = {[sortby]: BOOLS.indexOf(ascending) == 1 ? 1 : -1}
+    console.log(sorter)
     const skip = (pageNum - 1) * limitNum;
     const filter = {};
 
@@ -58,7 +68,7 @@ export async function find(req, res) {
             {
                 limit: limitNum,
                 skip,
-                sort: { concept: 1, gradeLevel: 1, subjectArea: 1 }
+                sort: sorter
             }
         ).lean().exec();
 

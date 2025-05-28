@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-black p-2 md:px-4 w-full h-full flex gap-x-2 gap-y-1 flex-wrap sm:flex-nowrap justify-center sm:justify-start items-center">
+  <div class="bg-black p-2 md:px-4 w-full h-full flex gap-x-2 gap-y-1 flex-wrap sm:flex-nowrap justify-between sm:justify-start items-center">
     <div class="grow sm:grow-0">
       <select
         name="grade"
@@ -26,7 +26,7 @@
       </select>
     </div>
 
-    <div>
+    <div class="max-w-50">
       <div class="group flex border-1 border-zinc-600 rounded outline-2 outline-transparent focus-within:outline-blue-400">
         <label for="search" aria-hidden="true" class="size-8 grid place-items-center opacity-50 group-focus-within:opacity-100">
           <img :src="searchIcon" width="20px" height="20px" class="invert inset-8 object-contain w-1/2 h-1/2 inline">
@@ -38,9 +38,26 @@
           v-model="rawSearch"
           aria-label="Keyword Search"
           placeholder="Keyword Search..."
-          class="origin-left peer overflow-x-hidden transition-all duration-300 px-4 py-1 text-zinc-300 inline focus:outline-none"
+          class="origin-left peer overflow-x-hidden transition-all w-full duration-300 px-1 py-1 text-zinc-300 inline focus:outline-none"
         />
       </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <label for="sortby" class="text-zinc-300">Sort: </label>
+      <select
+        name="sortby"
+        id="sortby"
+        v-model="sortby"
+        aria-label="sort results by"
+        class="w-full text-zinc-300 border-1 border-zinc-300 p-1 rounded"
+      >
+        <option :value="{sortby: 'concept', ascending: 'true'}">Topic &darr;</option>
+        <option :value="{sortby: 'concept', ascending: 'false'}">Topic &uarr;</option>
+        <option :value="{sortby: 'gradeLevel', ascending: 'true'}">Grade &darr;</option>
+        <option :value="{sortby: 'gradeLevel', ascending: 'false'}">Grade &uarr;</option>
+        <option :value="{sortby: 'subjectArea', ascending: 'true'}">Subject &darr;</option>
+        <option :value="{sortby: 'subjectArea', ascending: 'false'}">Subject &uarr;</option>
+      </select>
     </div>
   </div>
 </template>
@@ -56,15 +73,16 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  change: [{ grade?: string, subject?: string, search?: string }]
+  change: [{ grade?: string, subject?: string, search?: string, sortby: {sortby: string, ascending: string}}]
 }>()
 
 const route = useRoute()
 
 const grade = ref<string | undefined>()
 const subject = ref<string | undefined>()
-const search = ref<string | undefined>() // debounced output
-const rawSearch = ref<string>('')         // what user types
+const search = ref<string | undefined>() 
+const rawSearch = ref<string>('')        
+const sortby = ref<{sortby: string, ascending: string}>({sortby: 'concept', ascending: 'true'}) 
 
 const ready = ref(false)
 const timeoutID = ref<ReturnType<typeof setTimeout> | undefined>()
@@ -78,12 +96,13 @@ watch(rawSearch, (val) => {
 })
 
 // Emit only when all values are ready
-watch([grade, subject, search], () => {
+watch([grade, subject, sortby, search], () => {
   if (!ready.value) return
   emit('change', {
     grade: grade.value,
     subject: subject.value,
     search: search.value,
+    sortby: sortby.value
   })
 })
 
@@ -95,6 +114,8 @@ watch(
     subject.value = query.subject?.toString() || undefined
     search.value = query.search?.toString() || undefined
     rawSearch.value = query.search?.toString() || '' // fill input
+    sortby.value.sortby = query.sortby?.toString() || undefined
+    sortby.value.ascending = query.ascending?.toString() || undefined
     ready.value = true
   },
   { immediate: true }
