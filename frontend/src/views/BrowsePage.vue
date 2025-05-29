@@ -66,11 +66,11 @@
     onMounted(async () => {
         const query = route.query;
         const url = new QueryURLBuilder(baseURL)
-            .addParam('grade', query.grade ? query.grade.valueOf() : undefined)
-            .addParam('subject', query.subject ? query.subject.valueOf() : undefined)
-            .addParam('search', query.search ? query.search.valueOf() : undefined)
-            .addParam('sortby', query.sortby ? query.sortby.valueOf() : undefined)
-            .addParam('ascending', query.ascending ? query.ascending.valueOf() : undefined)
+            .addParam('grade', query.grade ? query.grade.toString() : undefined)
+            .addParam('subject', query.subject ? query.subject.toString() : undefined)
+            .addParam('search', query.search ? query.search.toString() : undefined)
+            .addParam('sortby', query.sortby ? query.sortby.toString() : undefined)
+            .addParam('ascending', query.ascending ? query.ascending.toString() : undefined)
         try {
             const response = await fetch(url.toString()).then(res => res.json());
             if (response.success) {

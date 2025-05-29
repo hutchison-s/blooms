@@ -110,12 +110,12 @@ watch([grade, subject, sortby, search], () => {
 watch(
   () => route.query,
   (query) => {
-    grade.value = query.grade?.toString() || undefined
-    subject.value = query.subject?.toString() || undefined
-    search.value = query.search?.toString() || undefined
-    rawSearch.value = query.search?.toString() || '' // fill input
-    sortby.value.sortby = query.sortby?.toString() || undefined
-    sortby.value.ascending = query.ascending?.toString() || undefined
+    grade.value = query.grade ? query.grade.toString() : undefined
+    subject.value = query.subject ? query.subject.toString() : undefined
+    search.value = query.search ? query.search.toString() : undefined
+    rawSearch.value = query.search ? query.search.toString() : '' // fill input
+    sortby.value.sortby = query.sortby ? query.sortby.toString() : 'concept'
+    sortby.value.ascending = query.ascending ? query.ascending.toString() : 'true'
     ready.value = true
   },
   { immediate: true }

@@ -42,7 +42,6 @@ export async function find(req, res) {
     }
 
     const sorter = {[sortby]: BOOLS.indexOf(ascending) == 1 ? 1 : -1}
-    console.log(sorter)
     const skip = (pageNum - 1) * limitNum;
     const filter = {};
 
@@ -74,7 +73,7 @@ export async function find(req, res) {
 
         const resultsWithUrl = results.map(doc => ({
             ...doc,
-            url: `${baseUrl}/${doc.gradeLevel}/${doc.subjectArea}/${doc.concept}`
+            url: `${baseUrl}/${doc.gradeLevel}/${encodeURIComponent(doc.subjectArea)}/${doc.concept}`
         }));
 
         const nextQuery = new URLSearchParams({...req.query});
