@@ -6,6 +6,7 @@ import yaml from 'yamljs';
 import { fileURLToPath } from 'url';
 import connectMongoose from './utils/mongo.js';
 import ConceptRouter from './routes/concept.router.js';
+import BookRouter from './routes/book.router.js';
 import AdminRouter from './routes/admin.router.js';
 import swaggerUi from 'swagger-ui-express';
 
@@ -36,6 +37,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
 // Connect router to concepts endpoint
 app.use('/api/concepts', ConceptRouter);
+
+app.use('/api/books', BookRouter)
 
 // Serve static Vue files
 app.use(express.static(path.join(__dirname, 'dist')));
