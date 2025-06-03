@@ -21,7 +21,7 @@
 import BloomLevelAbout from '@/components/BloomLevelAbout.vue';
 import { levelInfo } from '@/assets/helpers';
 
-const hClass = "uppercase font-black text-cyan-700 text-2xl md:text-4xl leading-loose"
+const hClass = "uppercase font-black text-cyan-700 text-2xl md:text-4xl lg:text-6xl lg:mb-8 leading-loose"
 const pClass = "font-light leading-loose mb-4 last:mb-0"
 
 </script>

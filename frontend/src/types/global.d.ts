@@ -1,17 +1,16 @@
-export interface Concept {
+export type ConceptTaxonomy = {
+    [K in BookBloomLevel]: string;
+}
+
+export type Concept = {
     _id: string,
     timestamp: Date,
     gradeLevel: number,
     subjectArea: Subject,
     concept: string,
-    knowledge: BloomLevelName,
-    comprehension: BloomLevelName,
-    application: BloomLevelName,
-    analysis: BloomLevelName,
-    synthesis: BloomLevelName,
-    evaluation: BloomLevelName,
     url?: string
-}
+} & ConceptTaxonomy
+
 
 export type ConceptPreview = Pick<Concept, '_id' | 'gradeLevel' | 'subjectArea' | 'concept' | 'url'>
 
@@ -38,4 +37,30 @@ export type BloomLevelType = {
   keywords: string;
   example: string;
 };
+
+export type BookBloomLevel = 
+    'knowledge'
+     | 'comprehension'
+     | 'application'
+     | 'analysis'
+     | 'synthesis'
+     | 'evaluation'
+
+
+
+export type BloomsTaxonomy = {
+  [K in BookBloomLevel]: string[];
+};
+
+export type Book = {
+    _id: string;
+    timestamp: Date;
+    title: string;
+    author: string;
+    genre: string;
+    slug: string;
+    synopsis: string;
+} & BloomsTaxonomy
+
+export type BookSummary = Pick<Book, '_id' | 'title' | 'author' | 'genre' | 'synopsis' | 'slug'>
 

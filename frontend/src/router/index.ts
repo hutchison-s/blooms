@@ -4,6 +4,8 @@ import HomePage from '../views/HomePage.vue';
 import AboutPage from '../views/AboutPage.vue';
 import ConceptPage from '@/views/ConceptPage.vue';
 import BrowsePage from '@/views/BrowsePage.vue';
+import LibraryPage from '@/views/LibraryPage.vue';
+import BookPage from '@/views/BookPage.vue';
 
 const routes = [
   {
@@ -17,6 +19,11 @@ const routes = [
     component: BrowsePage
   },
   {
+    path: '/library',
+    name: 'Library',
+    component: LibraryPage
+  },
+  {
     path: '/about',
     name: 'About',
     component: AboutPage,
@@ -25,6 +32,11 @@ const routes = [
     path: '/concepts/:grade/:subject/:slug',
     name: 'Concept',
     component: ConceptPage
+  },
+  {
+    path: '/books/:slug',
+    name: 'Book',
+    component: BookPage
   }
 ];
 

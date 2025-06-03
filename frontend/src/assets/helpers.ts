@@ -1,4 +1,4 @@
-import type { Concept, BloomLevelType, Subject } from "@/types/global";
+import type { BloomLevelType, Subject } from "@/types/global";
 
 export const ALL_SUBJECTS: Subject[] = [
   'Math', 'Science', 'Art', 'Health', 'Language Arts', 'Music', 'Social Studies', 'Technology'
@@ -7,7 +7,7 @@ export const ALL_GRADES: number[] = [
   3, 4, 5, 6, 7, 8
 ]
 
-export const bloomsLevels: (keyof Concept)[] = [
+export const bloomsLevels: string[] = [
     'knowledge',
     'comprehension',
     'application',
@@ -45,6 +45,36 @@ export const gradeColorMap: Record<number, string> = {
   12: 'text-rose-300'
 };
 
+export const genreColorMap: Record<string, string> = {
+  "Short Stories": "text-red-400",
+  "Dystopian Fiction": "text-orange-300",
+  "Adventure": "text-amber-300",
+  "Contemporary Fiction": "text-yellow-300",
+  "Memoir": "text-lime-300",
+  "Comedy": "text-green-300",
+  "Drama": "text-emerald-300",
+  "Fantasy": "text-teal-300",
+  "Historical Fiction": "text-cyan-300",
+  "Young Adult Fiction": "text-sky-300",
+  "Political Satire": "text-blue-300",
+  "Tragedy": "text-indigo-300",
+  "Epic Poetry": "text-violet-300",
+  "Chicano Literature": "text-purple-300",
+  "Science Fiction": "text-fuchsia-300",
+  "Philosophical Fiction": "text-pink-300",
+  "Political Fiction": "text-rose-300",
+  "Classic Literature": "text-stone-400",
+  "African-American Literature": "text-purple-400",
+  "Classic Fiction": "text-emerald-400",
+  "Graphic Novel": "text-cyan-400",
+  "Literary Fiction": "text-rose-400",
+  "Realistic Fiction": "text-yellow-400",
+  "War Fiction": "text-stone-500",
+  "Absurdist Fiction": "text-pink-400"
+};
+
+
+
 export const slugToTitle = (slug: string) => slug.split('-').map(w => w[0].toUpperCase()+w.substring(1)).join(' ');
 
 export class QueryURLBuilder extends URL {
@@ -66,6 +96,9 @@ export class QueryURLBuilder extends URL {
     };
     this.search = sp.toString();
     return this;
+  }
+  build() {
+    return this.toString();
   }
 }
 

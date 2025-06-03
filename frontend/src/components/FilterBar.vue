@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-black p-2 md:px-4 w-full h-full flex gap-x-2 gap-y-1 flex-wrap sm:flex-nowrap justify-between sm:justify-start items-center">
+  <div class="bg-black px-2 pb-2 md:px-4 w-full flex gap-x-2 gap-y-1 flex-wrap sm:flex-nowrap justify-between sm:justify-start items-center">
     <div class="grow sm:grow-0">
       <select
         name="grade"
         id="grade"
         v-model="grade"
         aria-label="grade level"
-        class="w-full text-zinc-300 border-1 border-zinc-300 p-1 rounded"
+        class="w-fit my-2 border-1 border-zinc-300/25 px-2 h-9 rounded bg-zinc-300/10 text-zinc-300/50"
       >
         <option :value="undefined">All Grades</option>
         <option v-for="g in gradeList" :key="g" :value="g.toString()">{{ g }}</option>
@@ -19,28 +19,28 @@
         id="subject"
         v-model="subject"
         aria-label="Subject filter"
-        class="w-full text-zinc-300 border-1 border-zinc-300 p-1 rounded"
+        class="w-fit my-2 border-1 border-zinc-300/25 px-2 h-9 rounded bg-zinc-300/10 text-zinc-300/50"
       >
         <option :value="undefined">All Subjects</option>
         <option v-for="s in subjectList" :key="s" :value="s">{{ s }}</option>
       </select>
     </div>
 
-    <div class="max-w-50">
+    <div class="max-w-50 flex items-center my-2">
       <div class="group flex border-1 border-zinc-600 rounded outline-2 outline-transparent focus-within:outline-blue-400">
-        <label for="search" aria-hidden="true" class="size-8 grid place-items-center opacity-50 group-focus-within:opacity-100">
-          <img :src="searchIcon" width="20px" height="20px" class="invert inset-8 object-contain w-1/2 h-1/2 inline">
-        </label>
-        <input
-          type="search"
-          name="search"
-          id="search"
-          v-model="rawSearch"
-          aria-label="Keyword Search"
-          placeholder="Keyword Search..."
-          class="origin-left peer overflow-x-hidden transition-all w-full duration-300 px-1 py-1 text-zinc-300 inline focus:outline-none"
-        />
-      </div>
+                        <label for="search" aria-hidden="true" class="size-8 grid place-items-center opacity-50 group-focus-within:opacity-100">
+                            <img :src="searchIcon" width="20px" height="20px" class="invert inset-8 object-contain w-1/2 h-1/2 inline">
+                        </label>
+                        <input
+                            type="search"
+                            name="search"
+                            id="search"
+                            v-model="search"
+                            aria-label="Keyword Search"
+                            placeholder="Keyword Search..."
+                            class="w-full duration-300 h-9 px-1 py-1 text-zinc-300 inline focus:outline-none"
+                        />
+                    </div>
     </div>
     <div class="flex items-center gap-2">
       <label for="sortby" class="text-zinc-300">Sort: </label>
@@ -49,7 +49,7 @@
         id="sortby"
         v-model="sortby"
         aria-label="sort results by"
-        class="w-full text-zinc-300 border-1 border-zinc-300 p-1 rounded"
+        class="w-fit my-2 border-1 border-zinc-300/25 px-2 h-9 rounded bg-zinc-300/10 text-zinc-300/50"
       >
         <option :value="{sortby: 'concept', ascending: 'true'}">Topic &darr;</option>
         <option :value="{sortby: 'concept', ascending: 'false'}">Topic &uarr;</option>

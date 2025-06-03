@@ -1,7 +1,7 @@
 
 
 <template>
-  <section class="w-full h-full grid grid-rows-[14dvh_74dvh]">
+  <section class="w-full h-[88dvh] flex flex-col">
     <FilterBar :grade-list="ALL_GRADES" :subject-list="ALL_SUBJECTS" @change="handleFilterChange"/>
     <ConceptList :concepts="concepts" :nextPageLink="nextPageLink" :status="conceptStatus" @next="getNextPage"/>
     </section>
@@ -18,7 +18,7 @@
     const route = useRoute();
     const router = useRouter();
 
-    const baseURL = import.meta.env.VITE_API_BASE || 'https://www.bloomexplorer.xyz/api/concepts';
+    const baseURL = import.meta.env.VITE_API_BASE + '/concepts'
 
     const concepts = ref<ConceptPreview[]>([]);
     const nextPageLink = ref<string | null>(null);

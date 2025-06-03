@@ -11,7 +11,7 @@
     const {grade, subject, slug} = route.params;
     const concept = ref<Concept>();
 
-    const baseURL = import.meta.env.VITE_API_BASE;
+    const baseURL = import.meta.env.VITE_API_BASE + '/concepts';
 
     onMounted(async ()=>{
         const result = await fetch(`${baseURL}/${grade}/${subject}/${slug}`).then(res => res.json());

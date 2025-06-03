@@ -21,7 +21,7 @@
     <!-- Mobile Menu -->
     <ul
       id="mobile-menu"
-      class="fixed top-0 right-0 h-full w-2/3 max-w-xs bg-black flex flex-col gap-4 p-6 pt-6 transition-transform duration-300 transform md:relative md:flex-row md:translate-x-0 md:p-0 md:h-auto md:w-auto md:bg-transparent md:items-center z-50"
+      class="fixed top-0 right-0 h-full w-2/3 bg-black flex flex-col gap-4 p-6 pt-6 transition-transform duration-300 transform md:relative md:flex-row md:translate-x-0 md:p-0 md:h-auto md:w-auto md:bg-transparent md:items-center z-50"
       :class="{ 'translate-x-0': isOpen, 'translate-x-full': !isOpen }"
     >
       <!-- Close button inside menu (mobile only) -->
@@ -35,7 +35,7 @@
       <li v-for="link in links" :key="link.to">
         <RouterLink
           :to="link.to"
-          class="block px-4 py-2 w-full md:w-fit text-xl md:text-lg underline-offset-4 hover:underline decoration-cyan-800 decoration-4 hover:decoration-zinc-600"
+          class="block px-3 py-2 w-full md:w-fit text-3xl md:text-base lg:text-lg underline-offset-4 hover:underline decoration-cyan-800 decoration-4 hover:decoration-zinc-600"
           :class="{ 'underline': $route.path === link.to }"
           @click="closeIfMobile"
         >
@@ -73,6 +73,7 @@ watch(isOpen, (open) => {
 const links = [
   { to: '/', label: 'Home' },
   { to: '/explore', label: 'Explore' },
+  { to: '/library', label: 'Library' },
   { to: '/about', label: 'About' },
 ];
 </script>
