@@ -45,7 +45,11 @@ export async function find(req, res) {
     const skip = (pageNum - 1) * limitNum;
     const filter = {};
     if (search) {
-        filter.$text = { $search: search };
+        filter.$or = [
+            { title: { $regex: search, $options: 'i' } },
+            { author: { $regex: search, $options: 'i' } },
+            { genre: { $regex: search, $options: 'i' } }
+        ];
     }
 
     try {

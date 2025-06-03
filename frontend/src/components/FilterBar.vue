@@ -35,7 +35,7 @@
                             type="search"
                             name="search"
                             id="search"
-                            v-model="search"
+                            v-model="rawSearch"
                             aria-label="Keyword Search"
                             placeholder="Keyword Search..."
                             class="w-full duration-300 h-9 px-1 py-1 text-zinc-300 inline focus:outline-none"
