@@ -8,6 +8,7 @@ import ConceptRouter from './routes/concept.router.js';
 import BookRouter from './routes/book.router.js';
 import AdminRouter from './routes/admin.router.js';
 import swaggerUi from 'swagger-ui-express';
+import { admin_check } from './middleware/admin_check.js';
 
 // Constants
 const PORT = process.env.PORT || 3000;
@@ -27,7 +28,7 @@ connectMongoose();
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
 // Connect router to admin endpoint
-// app.use('/api/admin', AdminRouter);
+app.use('/admin', admin_check, AdminRouter);
 
 // Connect router to concepts endpoint
 app.use('/concepts', ConceptRouter);
