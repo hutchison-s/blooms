@@ -13,7 +13,7 @@ import path from 'path';
 
 // Create Express app
 const app = express();
-app.use(cors({origin: '*'}));
+app.use(cors({origin: 'http://localhost:5173'}));
 app.use(express.json());
 
 

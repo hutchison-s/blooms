@@ -4,6 +4,7 @@ function isAdmin(token) {
 }
 
 export async function admin_check(req, res, next) {
+    if (req.method === 'OPTIONS') return res.sendStatus(200);
     const bearerHeader = req.headers['authorization']
     if (!bearerHeader) {
         return res.status(401).json({ message: 'Unauthorized' })
