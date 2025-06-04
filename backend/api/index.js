@@ -6,6 +6,7 @@ import ConceptRouter from '../src/routes/concept.router.js';
 import BookRouter from '../src/routes/book.router.js';
 import AdminRouter from '../src/routes/admin.router.js';
 import { admin_check } from '../src/middleware/admin_check.js';
+import cacheFor24Hours from '../src/middleware/cache.js';
 
 
 // Create Express app
@@ -21,8 +22,8 @@ connectMongoose();
 app.use('/admin', admin_check, AdminRouter);
 
 // Connect router to concepts endpoint
-app.use('/concepts', ConceptRouter);
+app.use('/concepts', cacheFor24Hours,ConceptRouter);
 
-app.use('/books', BookRouter)
+app.use('/books', cacheFor24Hours, BookRouter)
 
 export default app
