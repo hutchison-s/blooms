@@ -2,7 +2,7 @@
     <div v-if="books" class="flex flex-col h-[88dvh]">
         <section class="flex items-end md:items-center justify-between sm:justify-start w-full px-4 pb-2 gap-y-2 gap-x-4 bg-black">
                 <div class="max-w-[400px] flex items-center my-2">
-                    <div class="group flex border-1 border-zinc-600 rounded outline-2 outline-transparent focus-within:outline-blue-400">
+                    <div class="group flex border-1 border-zinc-300/25 bg-zinc-300/10 rounded outline-2 outline-transparent focus-within:outline-blue-400">
                         <label for="search" aria-hidden="true" class="size-8 grid place-items-center opacity-50 group-focus-within:opacity-100">
                             <img :src="searchIcon" width="20px" height="20px" class="invert inset-8 object-contain w-1/2 h-1/2 inline">
                         </label>
@@ -13,7 +13,7 @@
                             v-model="search"
                             aria-label="Keyword Search"
                             placeholder="Keyword Search..."
-                            class="w-full md:w-[350px] duration-300 h-9 px-1 py-1 text-zinc-300 inline focus:outline-none"
+                            class="w-full md:w-[350px] duration-300 h-9 px-1 py-1 text-zinc-300 inline  focus:outline-none placeholder:text-zinc-300/80"
                         />
                     </div>
                 </div>
@@ -21,20 +21,11 @@
             <div class="flex items-center min-w-28 gap-4">
 
                 <label for="sortby" class="text-zinc-300 text-sm hidden sm:block md:text-base w-full text-left">Sort by</label>
-                <select
-                    name="sortby"
-                    id="sortby"
+                <DropDown
                     v-model="sort"
-                    aria-label="sort results by"
-                    class="w-fit my-2 border-1 border-zinc-300/25 px-2 h-9 rounded bg-zinc-300/10 text-zinc-300/50"
-                >
-                    <option :value="{sortby: 'title', ascending: 'true'}">Title &darr;</option>
-                    <option :value="{sortby: 'title', ascending: 'false'}">Title &uarr;</option>
-                    <option :value="{sortby: 'author', ascending: 'true'}">Author &darr;</option>
-                    <option :value="{sortby: 'author', ascending: 'false'}">Author &uarr;</option>
-                    <option :value="{sortby: 'genre', ascending: 'true'}">Genre &darr;</option>
-                    <option :value="{sortby: 'genre', ascending: 'false'}">Genre &uarr;</option>
-                </select>
+                    :options="sortOptions"
+                    aria-label="Sort Books By"
+                />
             </div>
         </section>
         <section class="w-full h-full overflow-y-auto mask-y-95%">
@@ -53,6 +44,7 @@ import type { BookSummary } from '@/types/global';
 import { onMounted, ref, watch } from 'vue';
 import searchIcon from '@/assets/searchIcon.svg';
 import LogoLoader from '@/components/LogoLoader.vue';
+import DropDown from '@/components/DropDown.vue';
 
 const apiBase = import.meta.env.VITE_API_BASE + '/books';
 
@@ -62,6 +54,15 @@ const hasMore = ref<boolean>(false);
 const search = ref<string>('');
 const searchTimeout = ref<number | null>(null);
 const sort = ref<{sortby: string, ascending: string}>({sortby: 'title', ascending: 'true'});
+
+const sortOptions = [
+  { label: 'Title &darr;', value: { sortby: 'title', ascending: 'true' } },
+  { label: 'Title &uarr;', value: { sortby: 'title', ascending: 'false' } },
+  { label: 'Author &darr;', value: { sortby: 'author', ascending: 'true' } },
+  { label: 'Author &uarr;', value: { sortby: 'author', ascending: 'false' } },
+  { label: 'Genre &darr;', value: { sortby: 'genre', ascending: 'true' } },
+  { label: 'Genre &uarr;', value: { sortby: 'genre', ascending: 'false' } },
+]
 
 watch(search, () => {
     if (searchTimeout.value) {
@@ -88,6 +89,8 @@ const handleNextPage = async () => {
 onMounted(async () => {
   await fetchBooks();
 })
+
+
 
 const fetchBooks = async () => {
     const url = new QueryURLBuilder(apiBase)

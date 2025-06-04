@@ -1,64 +1,42 @@
 <template>
   <div class="bg-black px-2 pb-2 md:px-4 w-full flex gap-x-2 gap-y-1 flex-wrap sm:flex-nowrap justify-between sm:justify-start items-center">
-    <div class="grow sm:grow-0">
-      <select
-        name="grade"
-        id="grade"
+      <DropDown
         v-model="grade"
-        aria-label="grade level"
-        class="w-fit my-2 border-1 border-zinc-300/25 px-2 h-9 rounded bg-zinc-300/10 text-zinc-300/50"
-      >
-        <option :value="undefined">All Grades</option>
-        <option v-for="g in gradeList" :key="g" :value="g.toString()">{{ g }}</option>
-      </select>
-    </div>
+        :options="[{label: 'All Grades', value: undefined}, ...gradeList.map((g) => ({ label: g.toString(), value: g.toString() }))]"
+        aria-label="grade"
+        classes="grow sm:grow-0"
+      />
 
-    <div class="grow sm:grow-0">
-      <select
-        name="subject"
-        id="subject"
+      <DropDown
         v-model="subject"
-        aria-label="Subject filter"
-        class="w-fit my-2 border-1 border-zinc-300/25 px-2 h-9 rounded bg-zinc-300/10 text-zinc-300/50"
-      >
-        <option :value="undefined">All Subjects</option>
-        <option v-for="s in subjectList" :key="s" :value="s">{{ s }}</option>
-      </select>
-    </div>
+        :options="subjectList.map((s) => ({ label: s, value: s }))"
+        aria-label="subject"
+        classes="grow sm:grow-0"
+      />
 
     <div class="max-w-50 flex items-center my-2">
-      <div class="group flex border-1 border-zinc-600 rounded outline-2 outline-transparent focus-within:outline-blue-400">
-                        <label for="search" aria-hidden="true" class="size-8 grid place-items-center opacity-50 group-focus-within:opacity-100">
-                            <img :src="searchIcon" width="20px" height="20px" class="invert inset-8 object-contain w-1/2 h-1/2 inline">
-                        </label>
-                        <input
-                            type="search"
-                            name="search"
-                            id="search"
-                            v-model="rawSearch"
-                            aria-label="Keyword Search"
-                            placeholder="Keyword Search..."
-                            class="w-full duration-300 h-9 px-1 py-1 text-zinc-300 inline focus:outline-none"
-                        />
-                    </div>
+      <div class="group flex border-1 border-zinc-300/25 bg-zinc-300/10 rounded outline-2 outline-transparent focus-within:outline-blue-400">
+            <label for="search" aria-hidden="true" class="size-8 grid place-items-center opacity-50 group-focus-within:opacity-100">
+                <img :src="searchIcon" width="20px" height="20px" class="invert inset-8 object-contain w-1/2 h-1/2 inline">
+            </label>
+            <input
+                type="search"
+                name="search"
+                id="search"
+                v-model="rawSearch"
+                aria-label="Keyword Search"
+                placeholder="Keyword Search..."
+                class="w-full duration-300 h-9 px-1 py-1 text-zinc-300 inline focus:outline-none placeholder:text-zinc-300/80"
+            />
+        </div>
     </div>
-    <div class="flex items-center gap-2">
-      <label for="sortby" class="text-zinc-300">Sort: </label>
-      <select
-        name="sortby"
-        id="sortby"
+
+      <DropDown 
         v-model="sortby"
+        :options="sortOptions"
         aria-label="sort results by"
-        class="w-fit my-2 border-1 border-zinc-300/25 px-2 h-9 rounded bg-zinc-300/10 text-zinc-300/50"
-      >
-        <option :value="{sortby: 'concept', ascending: 'true'}">Topic &darr;</option>
-        <option :value="{sortby: 'concept', ascending: 'false'}">Topic &uarr;</option>
-        <option :value="{sortby: 'gradeLevel', ascending: 'true'}">Grade &darr;</option>
-        <option :value="{sortby: 'gradeLevel', ascending: 'false'}">Grade &uarr;</option>
-        <option :value="{sortby: 'subjectArea', ascending: 'true'}">Subject &darr;</option>
-        <option :value="{sortby: 'subjectArea', ascending: 'false'}">Subject &uarr;</option>
-      </select>
-    </div>
+        classes="grow sm:grow-0"
+      />
   </div>
 </template>
 
@@ -66,6 +44,8 @@
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import searchIcon from '@/assets/searchIcon.svg'
+import DropDown from '@/components/DropDown.vue'
+
 
 defineProps<{
   subjectList: string[]
@@ -82,7 +62,16 @@ const grade = ref<string | undefined>()
 const subject = ref<string | undefined>()
 const search = ref<string | undefined>() 
 const rawSearch = ref<string>('')        
-const sortby = ref<{sortby: string, ascending: string}>({sortby: 'concept', ascending: 'true'}) 
+const sortby = ref<{sortby: string, ascending: string}>({sortby: 'concept', ascending: 'true'})
+
+const sortOptions = [
+  { label: 'Topic &darr;', value: { sortby: 'concept', ascending: 'true' } },
+  { label: 'Topic &uarr;', value: { sortby: 'concept', ascending: 'false' } },
+  { label: 'Grade &darr;', value: { sortby: 'gradeLevel', ascending: 'true' } },
+  { label: 'Grade &uarr;', value: { sortby: 'gradeLevel', ascending: 'false' } },
+  { label: 'Subject &darr;', value: { sortby: 'subjectArea', ascending: 'true' } },
+  { label: 'Subject &uarr;', value: { sortby: 'subjectArea', ascending: 'false' } },
+]
 
 const ready = ref(false)
 const timeoutID = ref<ReturnType<typeof setTimeout> | undefined>()
