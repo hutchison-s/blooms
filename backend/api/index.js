@@ -14,7 +14,7 @@ import { admin_check } from './middleware/admin_check.js';
 const PORT = process.env.PORT || 3000;
 
 // Load your OpenAPI spec
-const openApiDocument = yaml.load(path.join(__dirname, 'docs/openapi.yaml'));
+const openApiDocument = yaml.load(path.join(process.cwd(), 'docs/openapi.yaml'));
 
 // Create Express app
 const app = express();

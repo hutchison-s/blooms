@@ -1,6 +1,6 @@
 import Book from "../models/Book.js";
 import Concept from "../models/Concept.js"
-import { data } from "../seedData.js";
+import { data } from "../../seedData.js";
 
 const updates = [];
 const newDocs = [...data];
