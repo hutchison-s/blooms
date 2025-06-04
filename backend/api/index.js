@@ -11,6 +11,12 @@ import { admin_check } from '../src/middleware/admin_check.js';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
+// Create Express app
+const app = express();
+app.use(cors({origin: '*'}));
+app.use(express.json());
+
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -19,11 +25,6 @@ const PORT = process.env.PORT || 3000;
 
 // Load your OpenAPI spec
 const openApiDocument = yaml.load(path.join(__dirname, 'docs/openapi.yaml'));
-
-// Create Express app
-const app = express();
-app.use(express.json());
-app.use(cors());
 
 // Connect to DB
 connectMongoose();
