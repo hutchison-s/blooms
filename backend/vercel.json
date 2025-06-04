@@ -4,10 +4,8 @@
     { "src": "api/index.js", "use": "@vercel/node" }
   ],
   "routes": [
+    { "src": "/api-docs", "dest": "/api-docs.html" },
     { "src": "/(.*)", "dest": "/api/index.js" }
-  ],
-  "redirects": [
-    { "source": "/api-docs", "destination": "/api-docs.html", "permanent": false }
   ]
 
 }
