@@ -40,6 +40,7 @@
         v-for="(option, index) in options"
         :key="index"
         @click.stop="select(option.value)"
+        @touchend.stop="select(option.value)"
         :class="[
           'cursor-pointer select-none px-4 py-2',
           isSelected(option.value)
@@ -56,7 +57,7 @@
 </template>
 
 <script lang="ts" setup generic="T">
-import { ref, computed, defineProps, defineEmits, watch, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onBeforeUnmount } from 'vue'
 
 interface Option {
   label: string
@@ -78,7 +79,9 @@ const isOpen = ref(false)
 
 const select = (value: T): void => {
   emit('update:modelValue', value)
-  isOpen.value = false
+  setTimeout(() => {
+    isOpen.value = false
+  }, 0)
 }
 
 const isSelected = (value: T): boolean => {
@@ -103,20 +106,24 @@ const widestWidth = computed((): number => {
 
 const dropdownRef = ref<HTMLDivElement | null>(null)
 
-function handleClickOutside(event: MouseEvent) {
+function handleClickOutside(event: MouseEvent | TouchEvent) {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
+    event.stopPropagation();
     close()
   }
 }
 
 function open() {
   isOpen.value = true
+  console.log('open')
   document.addEventListener('click', handleClickOutside)
+  document.addEventListener('touchend', handleClickOutside)
 }
 
 function close() {
   isOpen.value = false
   document.removeEventListener('click', handleClickOutside)
+  document.removeEventListener('touchend', handleClickOutside)
 }
 
 function toggle() {
@@ -129,6 +136,7 @@ function toggle() {
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
+  document.removeEventListener('touchend', handleClickOutside)
 })
 
 </script>
