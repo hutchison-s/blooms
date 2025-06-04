@@ -40,6 +40,4 @@ app.use('/concepts', ConceptRouter);
 
 app.use('/books', BookRouter)
 
-app.listen(PORT, ()=>{
-  console.log(`Server is listening on port ${PORT}`)
-})
+export default app
