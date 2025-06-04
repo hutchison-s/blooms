@@ -14,7 +14,7 @@ const BOOLS = ['false', 'true']
     - Returns results in 'data' with pagination metadata
 */
 export async function find(req, res) {
-    const baseUrl = `${req.protocol}://${req.get('host')}/api/concepts`;
+    const baseUrl = `${req.protocol}://${req.get('host')}/concepts`;
     const { subject, search, grade, sortby = 'concept', ascending = 'true', page = 1, limit = DEFAULT_LIMIT } = req.query;
 
     const pageNum = Number(page);

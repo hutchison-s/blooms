@@ -19,7 +19,7 @@ const BOOLS = ['false', 'true']
  * - JSON object containing paginated book results with metadata
  */
 export async function find(req, res) {
-    const baseUrl = `${req.protocol}://${req.get('host')}/api/books`;
+    const baseUrl = `${req.protocol}://${req.get('host')}/books`;
     const { search, sortby = 'title', ascending = 'true', page = 1, limit = DEFAULT_LIMIT } = req.query;
 
     const pageNum = Number(page);
