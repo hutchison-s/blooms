@@ -13,12 +13,8 @@ import path from 'path';
 
 // Create Express app
 const app = express();
-app.use(cors({origin: '*', credentials: false}));
+app.use(cors());
 app.use(express.json());
-app.get('/ping', async (req, res) => {
-    res.send('pong');
-})
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,7 +32,7 @@ connectMongoose();
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
 // Connect router to admin endpoint
-// app.use('/admin', admin_check, AdminRouter);
+app.use('/admin', admin_check, AdminRouter);
 
 // Connect router to concepts endpoint
 app.use('/concepts', ConceptRouter);

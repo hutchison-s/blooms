@@ -27,3 +27,21 @@ export async function seed(req, res) {
         return res.status(200).json(response);
 
 }
+
+export async function dumpBooks(req, res) {
+    try {
+        const books = await Book.find();
+        return res.status(200).json(books);
+    } catch (error) {
+        return res.status(500).json({message: error.message || error})
+    }
+}
+
+export async function dumpConcepts(req, res) {
+    try {
+        const concepts = await Concept.find();
+        return res.status(200).json(concepts);
+    } catch (error) {
+        return res.status(500).json({message: error.message || error})
+    }
+}
