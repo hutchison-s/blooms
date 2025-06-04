@@ -1,0 +1,573 @@
+openapi: 3.0.3
+info:
+  title: Concepts API
+  version: 1.0.0
+  description: API endpoints for managing educational concepts
+
+servers:
+  - url: https://www.bloomexplorer.xyz/api/
+
+paths:
+  /concepts:
+    get:
+      summary: Get concepts list with optional filters, pagination, and search
+      parameters:
+        - name: grade
+          in: query
+          description: Grade level filter (1-12)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+        - name: subject
+          in: query
+          description: Subject area filter (case-insensitive)
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: Text search term (max length 100)
+          schema:
+            type: string
+            maxLength: 100
+        - name: page
+          in: query
+          description: Page number for pagination (default 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of results per page (max 50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 50
+      responses:
+        '200':
+          description: Successful retrieval of paginated concepts list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "6 matching documents returned."
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConceptSummary'
+                  count:
+                    type: integer
+                    description: Number of items returned
+                    example: 6
+                  pagination:
+                    type: object
+                    properties:
+                      currentPage:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 1
+                      totalItems:
+                        type: integer
+                        example: 6
+                      totalPages:
+                        type: integer
+                        example: 6
+                      nextPage:
+                        type: string
+                        nullable: true
+                        example: "https://www.bloomexplorer.xyz/api/concepts?subject=math&search=fractions&limit=1&page=2"
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error processing request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /concepts/health:
+    get:
+      summary: Health check of database connection and uptime
+      responses:
+        '200':
+          description: Database connected and uptime info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  uptime:
+                    type: number
+                    description: Process uptime in seconds
+                  timestamp:
+                    type: string
+                    format: date-time
+        '500':
+          description: Database health check failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /concepts/grades:
+    get:
+      summary: Get grade levels info with counts and subject sub-aggregations
+      responses:
+        '200':
+          description: Grade levels summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                  count:
+                    type: integer
+                  data:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        count:
+                          type: integer
+                        url:
+                          type: string
+                        subjectAreas:
+                          type: object
+                          additionalProperties:
+                            type: object
+                            properties:
+                              count:
+                                type: integer
+                              url:
+                                type: string
+        '500':
+          description: Error retrieving grade info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /concepts/subjects:
+    get:
+      summary: Get subject areas info with counts and grade sub-aggregations
+      responses:
+        '200':
+          description: Subject areas summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                  count:
+                    type: integer
+                  data:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        count:
+                          type: integer
+                        url:
+                          type: string
+                        gradeLevels:
+                          type: object
+                          additionalProperties:
+                            type: object
+                            properties:
+                              count:
+                                type: integer
+                              url:
+                                type: string
+        '500':
+          description: Error retrieving subject info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /concepts/{grade}/{subject}/{slug}:
+    get:
+      summary: Get a single concept by grade, subject, and slug
+      parameters:
+        - name: grade
+          in: path
+          required: true
+          description: Grade level (1-12)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+        - name: subject
+          in: path
+          required: true
+          description: Subject area
+          schema:
+            type: string
+        - name: slug
+          in: path
+          required: true
+          description: Concept slug/name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Concept found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/ConceptDocument'
+        '400':
+          description: Missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Concept not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error retrieving concept
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /books:
+    get:
+      summary: Get list of book summaries with optional search, sorting, and pagination
+      parameters:
+        - name: search
+          in: query
+          description: Search by title, author, or genre (case-insensitive)
+          schema:
+            type: string
+            maxLength: 100
+        - name: sort
+          in: query
+          description: Sort by field, prefix with "-" for descending (e.g. "title" or "-author")
+          schema:
+            type: string
+            enum: [title, -title, author, -author, genre, -genre]
+        - name: page
+          in: query
+          description: Page number for pagination (default 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Number of results per page (max 50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+      responses:
+        '200':
+          description: Successful retrieval of paginated book summaries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "3 matching books returned."
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BookSummary'
+                  count:
+                    type: integer
+                    example: 3
+                  pagination:
+                    type: object
+                    properties:
+                      currentPage:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 20
+                      totalItems:
+                        type: integer
+                        example: 45
+                      totalPages:
+                        type: integer
+                        example: 3
+                      nextPage:
+                        type: string
+                        nullable: true
+                        example: "https://www.bloomexplorer.xyz/api/books?page=2&limit=20"
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error retrieving books
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /books/{slug}:
+    get:
+      summary: Get full details of a single book by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: URL-friendly identifier for the book
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Book document found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/BookDocument'
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error retrieving book
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ConceptSummary:
+      type: object
+      properties:
+        gradeLevel:
+          type: integer
+          example: 3
+        subjectArea:
+          type: string
+          example: "Math"
+        concept:
+          type: string
+          example: "understand-fractions"
+        url:
+          type: string
+          description: URL to get this concept detail
+          example: "https://www.bloomexplorer.xyz/api/concepts/5/math/understand-fractions"
+      required:
+        - gradeLevel
+        - subjectArea
+        - concept
+        - url
+
+    ConceptDocument:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          description: ISO 8601 date-time string when concept was last updated
+          example: "2025-05-26T12:34:56Z"
+        gradeLevel:
+          type: integer
+          example: 3
+        subjectArea:
+          type: string
+          example: "Math"
+        concept:
+          type: string
+          example: "understand-fractions"
+        knowledge:
+          type: string
+          example: "What is a unit fraction?"
+        comprehension:
+          type: string
+          example: "Describe how visual fraction models can help you understand fractions."
+        application:
+          type: string
+          example: "Draw a visual model to show that 1/2 is equivalent to 2/4."
+        analysis:
+          type: string
+          example: "Analyze why the size of a fractional part is relative to the size of the whole, using an example like 1/2 of a small bucket versus 1/3 of a large bucket."
+        synthesis:
+          type: string
+          example: "Propose a new way to represent fractions that is different from number lines or area models."
+        evaluation:
+          type: string
+          example: "Is it more important to be able to compare fractions with the same numerator or the same denominator? Justify your answer."
+      required:
+        - timestamp
+        - gradeLevel
+        - subjectArea
+        - concept
+        - knowledge
+        - comprehension
+        - application
+        - analysis
+        - synthesis
+        - evaluation
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+
+    BookSummary:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "683a84df3d1a5f4de0683333"
+        title:
+          type: string
+          example: "145th Street: Short Stories"
+        author:
+          type: string
+          example: "Walter Dean Myers"
+        genre:
+          type: string
+          example: "Short Stories"
+        slug:
+          type: string
+          example: "145th-street-short-stories"
+        synopsis:
+          type: string
+          example: "This collection of interconnected short stories vividly portrays the lives, struggles, and triumphs of the residents of a vibrant, diverse neighborhood in Harlem."
+        url:
+          type: string
+          example: "http://localhost:3000/api/books/145th-street-short-stories"
+      required:
+        - _id
+        - title
+        - author
+        - genre
+        - slug
+        - synopsis
+        - url
+
+    BookDocument:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "683a84df3d1a5f4de0683333"
+        title:
+          type: string
+          example: "145th Street: Short Stories"
+        author:
+          type: string
+          example: "Walter Dean Myers"
+        genre:
+          type: string
+          example: "Short Stories"
+        slug:
+          type: string
+          example: "145th-street-short-stories"
+        synopsis:
+          type: string
+        knowledge:
+          type: array
+          items:
+            type: string
+        comprehension:
+          type: array
+          items:
+            type: string
+        application:
+          type: array
+          items:
+            type: string
+        analysis:
+          type: array
+          items:
+            type: string
+        synthesis:
+          type: array
+          items:
+            type: string
+        evaluation:
+          type: array
+          items:
+            type: string
+        __v:
+          type: integer
+          example: 0
+      required:
+        - _id
+        - title
+        - author
+        - genre
+        - slug
+        - synopsis
+        - knowledge
+        - comprehension
+        - application
+        - analysis
+        - synthesis
+        - evaluation
+        - __v
+

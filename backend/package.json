@@ -19,10 +19,8 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "mongodb": "^6.16.0",
-    "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1",
-    "vercel": "^42.3.0",
-    "yamljs": "^0.3.0"
+    "swagger-ui-dist": "^5.22.0",
+    "vercel": "^42.3.0"
   },
   "devDependencies": {
     "mongoose": "^8.15.0",

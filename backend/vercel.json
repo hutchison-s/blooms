@@ -5,5 +5,9 @@
   ],
   "routes": [
     { "src": "/(.*)", "dest": "/api/index.js" }
+  ],
+  "redirects": [
+    { "source": "/api-docs", "destination": "/api-docs.html", "permanent": false }
   ]
+
 }
