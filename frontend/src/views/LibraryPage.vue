@@ -45,9 +45,10 @@ import { onMounted, ref, watch } from 'vue';
 import searchIcon from '@/assets/searchIcon.svg';
 import LogoLoader from '@/components/LogoLoader.vue';
 import DropDown from '@/components/DropDown.vue';
+import { useRouter } from 'vue-router';
 
 const apiBase = import.meta.env.VITE_API_BASE + '/books';
-
+const router = useRouter();
 const page = ref<number>(1);
 const books = ref<BookSummary[]>([]);
 const hasMore = ref<boolean>(false);
@@ -93,16 +94,24 @@ onMounted(async () => {
 
 
 const fetchBooks = async () => {
-    const url = new QueryURLBuilder(apiBase)
-        .addParam('limit', '20')
-        .addParam('page', page.value.toString())
-        .addParam('search', search.value)
-        .addParam('sortby', sort.value.sortby)
-        .addParam('ascending', sort.value.ascending)
-        .build();
-
-    const response = await fetch(url).then(res => res.json());
-    books.value = [...books.value, ...response.data as BookSummary[]];
-    hasMore.value = response.pagination.nextPage ? true : false;
+    try {
+        const url = new QueryURLBuilder(apiBase)
+            .addParam('limit', '20')
+            .addParam('page', page.value.toString())
+            .addParam('search', search.value)
+            .addParam('sortby', sort.value.sortby)
+            .addParam('ascending', sort.value.ascending)
+            .build();
+    
+        const response = await fetch(url).then(res => res.json()).catch(error => {
+            console.error(error);
+            router.push({name: 'Error'});
+        });
+        books.value = [...books.value, ...response.data as BookSummary[]];
+        hasMore.value = response.pagination.nextPage ? true : false;
+    } catch (error) {
+        console.error(error);
+        router.push({name: 'Error'})
+    }
 }
 </script>

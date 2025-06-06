@@ -6,6 +6,8 @@ import ConceptPage from '@/views/ConceptPage.vue';
 import BrowsePage from '@/views/BrowsePage.vue';
 import LibraryPage from '@/views/LibraryPage.vue';
 import BookPage from '@/views/BookPage.vue';
+import NotFound from '@/views/NotFound.vue';
+import ErrorPage from '@/views/ErrorPage.vue';
 
 const routes = [
   {
@@ -37,6 +39,16 @@ const routes = [
     path: '/books/:slug',
     name: 'Book',
     component: BookPage
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: NotFound
+  },
+  {
+    path: '/error',
+    name: 'Error',
+    component: ErrorPage
   }
 ];
 

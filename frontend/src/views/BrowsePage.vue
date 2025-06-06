@@ -58,6 +58,7 @@
             concepts.value = [];
             nextPageLink.value = null;
             conceptStatus.value = 'error';
+            router.push({name: 'Error'})
         }
         router.replace({query: {...q, sortby: q.sortby.sortby, ascending: q.sortby.ascending}})
         
@@ -87,6 +88,7 @@
             concepts.value = [];
             nextPageLink.value = null;
             conceptStatus.value = 'error';
+            router.push({name: 'Error'})
         }
     })
 

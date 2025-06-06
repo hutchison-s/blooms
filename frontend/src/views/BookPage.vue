@@ -61,7 +61,16 @@ const goBack = ()=>{
 
 onMounted( async () => {
     console.log(slug)
-    const {data} = await fetch(`${baseURL}/${slug}`).then(res => res.json())
-    book.value = data;
+    const result = await fetch(`${baseURL}/${slug}`).then(res => res.json()).catch(err => {
+            console.error(err);
+            return router.push({name: 'NotFound'});
+        });
+    if (result.success) {
+        book.value = result.data;
+    } else {
+            console.error(result.error);
+            router.push({name: 'Error'});
+        }
+    
 })
 </script>
