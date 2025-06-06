@@ -2,12 +2,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomePage from '../views/HomePage.vue';
 import AboutPage from '../views/AboutPage.vue';
-import ConceptPage from '@/views/ConceptPage.vue';
 import BrowsePage from '@/views/BrowsePage.vue';
 import LibraryPage from '@/views/LibraryPage.vue';
 import BookPage from '@/views/BookPage.vue';
 import NotFound from '@/views/NotFound.vue';
 import ErrorPage from '@/views/ErrorPage.vue';
+import TopicPage from '@/views/TopicPage.vue';
 
 const routes = [
   {
@@ -32,8 +32,8 @@ const routes = [
   },
   {
     path: '/concepts/:grade/:subject/:slug',
-    name: 'Concept',
-    component: ConceptPage
+    name: 'Topic',
+    component: TopicPage
   },
   {
     path: '/books/:slug',

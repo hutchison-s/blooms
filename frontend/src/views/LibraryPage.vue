@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { QueryURLBuilder } from '@/assets/helpers';
-import BookList from '@/components/BookList.vue';
+import BookList from '@/components/library/BookList.vue';
 import type { BookSummary } from '@/types/global';
 import { onMounted, ref, watch } from 'vue';
 import searchIcon from '@/assets/searchIcon.svg';

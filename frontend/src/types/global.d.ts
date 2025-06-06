@@ -1,18 +1,18 @@
-export type ConceptTaxonomy = {
+export type TopicTaxonomy = {
     [K in BookBloomLevel]: string;
 }
 
-export type Concept = {
+export type Topic = {
     _id: string,
     timestamp: Date,
     gradeLevel: number,
     subjectArea: Subject,
     concept: string,
     url?: string
-} & ConceptTaxonomy
+} & TopicTaxonomy
 
 
-export type ConceptPreview = Pick<Concept, '_id' | 'gradeLevel' | 'subjectArea' | 'concept' | 'url'>
+export type TopicPreview = Pick<Topic, '_id' | 'gradeLevel' | 'subjectArea' | 'concept' | 'url'>
 
 export type BloomLevelName = 
     'knowledge'

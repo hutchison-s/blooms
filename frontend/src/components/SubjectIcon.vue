@@ -1,5 +1,5 @@
 <template>
-    <img :src="src" :alt="subject" width="16px" height="16px" class="invert size-4 md:size-6">
+    <img :title="subject" :src="src" :alt="subject" width="16px" height="16px" class="invert size-5 md:size-7">
 </template>
 
 <script setup lang="ts">

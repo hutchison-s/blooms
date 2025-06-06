@@ -16,9 +16,9 @@
                 </div>
             </div>
         </section>
-        <section class="overflow-y-auto" v-if="book">
+        <ul class="overflow-y-auto" v-if="book">
             <BookLevel  v-for="(level, idx) in bloomLevels" :key="idx" :title="level" :questions="book[level]"/>
-        </section>
+        </ul>
     </div>
     
     <section v-else class="w-full h-full">
@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { genreColorMap } from '@/assets/helpers'
-import BookLevel from '@/components/BookLevel.vue'
+import BookLevel from '@/components/library/BookLevel.vue'
 import LogoLoader from '@/components/LogoLoader.vue'
 import type { Book, BookBloomLevel } from '@/types/global'
 import { computed, onMounted, ref } from 'vue'
