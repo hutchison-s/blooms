@@ -8,7 +8,7 @@
             <p class="font-light px-2 py-4 opacity-80 group-hover:opacity-100 text-[0.9rem] transition-all duration-200">{{ preview.synopsis }}</p>
         </div>
         
-        <p :class="`text-right ${genreColor}`">{{ preview.genre }}</p>
+        <p :class="`text-right ${genreColor}`"><GenrePill :genre="preview.genre" /></p>
     </RouterLink>
 </template>
 
@@ -16,6 +16,7 @@
 import { genreColorMap } from '@/assets/helpers';
 import type { BookSummary } from '@/types/global';
 import { RouterLink } from 'vue-router';
+import GenrePill from '../GenrePill.vue';
 
     const props = defineProps<{
         preview: BookSummary

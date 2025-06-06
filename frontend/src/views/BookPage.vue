@@ -6,7 +6,7 @@
                     <h2 class="font-black uppercase min-w-[300px] text-cyan-200 ">{{ book.title }}</h2>
                     <div class="flex gap-4 justify-between w-full items-center">
                         <p class="italic font-light text-lg">{{ book.author }}</p>
-                        <p :class="`${genreColor} font-light text-lg`">{{ book.genre }}</p>
+                        <p :class="`${genreColor} font-light text-lg`"><GenrePill :genre="book.genre" /></p>
                     </div>
                 </div>
                 <div class="w-full md:grow flex justify-end sm:w-fit">
@@ -16,9 +16,9 @@
                 </div>
             </div>
         </section>
-        <ul class="overflow-y-auto" v-if="book">
+        <section class="overflow-y-auto" v-if="book">
             <BookLevel  v-for="(level, idx) in bloomLevels" :key="idx" :title="level" :questions="book[level]"/>
-        </ul>
+        </section>
     </div>
     
     <section v-else class="w-full h-full">
@@ -28,6 +28,7 @@
 
 <script setup lang="ts">
 import { genreColorMap } from '@/assets/helpers'
+import GenrePill from '@/components/GenrePill.vue'
 import BookLevel from '@/components/library/BookLevel.vue'
 import LogoLoader from '@/components/LogoLoader.vue'
 import type { Book, BookBloomLevel } from '@/types/global'

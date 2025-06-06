@@ -6,7 +6,7 @@
                         <h2 class="font-black uppercase min-w-[300px] text-cyan-200 ">{{ slugToTitle(topic.concept) }}</h2>
                         <div class="flex gap-6 justify-between w-full items-center">
                             <div class="flex gap-6 items-center w-fit">
-                                <p class="italic font-light text-lg" :class="gradeColorMap[topic.gradeLevel]">{{ toOrdinal(topic.gradeLevel) }}</p>
+                                <p class="italic font-light text-lg" ><GradePill :grade="topic.gradeLevel" /></p>
                                 <SubjectIcon :subject="topic.subjectArea" class="opacity-70"/>
                             </div>
                             <button @click="router.back()" class=" block font-light text-sm md:text-xl border-1 border-zinc-300 rounded px-3 py-1">
@@ -16,9 +16,9 @@
                     </div>
                 </div>
             </section>
-            <ul class="overflow-y-auto grow" style="scroll-snap-type: y mandatory;">
+            <section class="overflow-y-auto grow" style="scroll-snap-type: y mandatory;">
                 <TopicLevel v-for="level of bloomLevels" :key="level" :title="level" :question="topic[level]"/>
-            </ul>
+            </section>
         </div>
         <section v-else class="w-full h-full">
             <LogoLoader />
@@ -29,11 +29,12 @@
 <script setup lang="ts">
     import {ref, onMounted} from 'vue';
     import {useRoute, useRouter} from 'vue-router';
-    import { gradeColorMap, slugToTitle, toOrdinal } from '@/assets/helpers';
+    import { slugToTitle } from '@/assets/helpers';
     import type {BookBloomLevel, Topic} from '@/types/global';
     import TopicLevel from '@/components/topics/TopicLevel.vue';
-import SubjectIcon from '@/components/SubjectIcon.vue';
-import LogoLoader from '@/components/LogoLoader.vue';
+    import SubjectIcon from '@/components/SubjectIcon.vue';
+    import LogoLoader from '@/components/LogoLoader.vue';
+    import GradePill from '@/components/GradePill.vue';
     const route = useRoute();
     const router = useRouter();
     const {grade, subject, slug} = route.params;

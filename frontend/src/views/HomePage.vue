@@ -1,7 +1,7 @@
 
 
 <template>
-    <section class="w-full min-h-[90dvh] flex flex-col gap-8 py-12 max-w-[800px] mx-auto px-6 text-zinc-300">
+    <section class="w-full min-h-[88dvh] flex flex-col gap-8 py-12 max-w-[800px] mx-auto px-6 text-zinc-300">
         <h1 class="leading-relaxed text-4xl md:text-5xl text-center text-zinc-300">Because <span class="uppercase font-black text-blue-300">good&nbsp;questions</span> are the start of <span class="uppercase font-black text-blue-300">great&nbsp;thinking</span></h1>
         <p class="font-light text-xl">
             Bloom Explorer is a simple tool designed for teachers and students to explore academic concepts through the lens of Bloom&apos;s Taxonomy. Whether you're planning a lesson, differentiating instruction, or helping students think critically, this site helps break down concepts by cognitive level — from basic recall to creative synthesis.</p>
