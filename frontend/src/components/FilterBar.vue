@@ -9,7 +9,7 @@
 
       <DropDown
         v-model="subject"
-        :options="subjectList.map((s) => ({ label: s, value: s }))"
+        :options="[{label: 'All Subjects', value: undefined}, ...subjectList.map((s) => ({ label: s, value: s }))]"
         aria-label="subject"
         classes="grow sm:grow-0"
       />
