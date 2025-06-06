@@ -16,7 +16,7 @@
       class="flex items-center justify-between border border-zinc-300/25 bg-zinc-300/10 text-zinc-300 rounded px-2 h-9 min-w-[100%] w-[max-content] focus:outline-none focus:ring-2 focus:ring-blue-500"
       aria-haspopup="listbox"
       :aria-expanded="isOpen"
-      :style="{ width: `${widestWidth}px`}"
+      :style="{ width: `${widestWidth}px` }"
     >
       <span class="truncate" v-html="selectedLabel"></span>
       <svg
@@ -45,7 +45,7 @@
           'cursor-pointer select-none px-4 py-2',
           isSelected(option.value)
             ? 'bg-cyan-300 text-black'
-            : 'hover:bg-zinc-700 hover:text-white'
+            : 'hover:bg-zinc-700 hover:text-white',
         ]"
         role="option"
         :aria-selected="isSelected(option.value)"
@@ -89,26 +89,29 @@ const isSelected = (value: T): boolean => {
 }
 
 const selectedLabel = computed((): string => {
-  const selected = props.options.find(opt => isSelected(opt.value))
+  const selected = props.options.find((opt) => isSelected(opt.value))
   return selected ? selected.label : 'Select...'
 })
 
 // Close dropdown if modelValue changes externally
-watch(() => props.modelValue, () => {
-  isOpen.value = false
-})
+watch(
+  () => props.modelValue,
+  () => {
+    isOpen.value = false
+  },
+)
 
 const widestWidth = computed((): number => {
   // count html unicode characters as 1 instead of 6 when evaluating things like &larr;
-  const cleanedOptions = props.options.map(opt => opt.label.replace(/&[a-z]+;/g, 'a'))
-  return Math.max(...cleanedOptions.map(opt => opt.length * 12.5)) + 12
+  const cleanedOptions = props.options.map((opt) => opt.label.replace(/&[a-z]+;/g, 'a'))
+  return Math.max(...cleanedOptions.map((opt) => opt.length * 12.5)) + 12
 })
 
 const dropdownRef = ref<HTMLDivElement | null>(null)
 
 function handleClickOutside(event: MouseEvent | TouchEvent) {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target as Node)) {
-    event.stopPropagation();
+    event.stopPropagation()
     close()
   }
 }
@@ -138,5 +141,4 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
   document.removeEventListener('touchend', handleClickOutside)
 })
-
 </script>

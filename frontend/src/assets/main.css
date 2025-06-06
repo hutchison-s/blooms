@@ -1,77 +1,85 @@
 @import 'tailwindcss';
 
-
 * {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
-select, button {
-    cursor: pointer;
+select,
+button {
+  cursor: pointer;
 }
 
 html {
-    background-color: #005f78;
+  background-color: #005f78;
 }
 
 .question-slide > * {
-    position: relative;
+  position: relative;
 }
 .question-slide:not(:last-child) > p::after {
-    content: url('/down.png');
-    position: absolute;
-    bottom: -12px;
-    right: 1rem;
-    opacity: 0.1;
-    z-index: 0;
+  content: url('/down.png');
+  position: absolute;
+  bottom: -12px;
+  right: 1rem;
+  opacity: 0.1;
+  z-index: 0;
 }
 .question-slide:not(:first-child) > h3::after {
-    content: url('/down.png');
-    position: absolute;
-    top: -12px;
-    right: 1rem;
-    opacity: 0.1;
-    z-index: 0;
-    rotate: 180deg;
+  content: url('/down.png');
+  position: absolute;
+  top: -12px;
+  right: 1rem;
+  opacity: 0.1;
+  z-index: 0;
+  rotate: 180deg;
 }
 .question-slide:first-child > p::after {
-    animation: suggest 1.5s infinite;
-
+  animation: suggest 1.5s infinite;
 }
 .question-slide:last-child > h3::after {
-    animation: suggest 1.5s reverse infinite;
+  animation: suggest 1.5s reverse infinite;
 }
 
 .about-slide:not(:last-child)::before {
-    content: url('/down.png');
-    position: absolute;
-    bottom: 0;
-    right: 1rem;
-    opacity: 0.1;
-    z-index: 0;
+  content: url('/down.png');
+  position: absolute;
+  bottom: 0;
+  right: 1rem;
+  opacity: 0.1;
+  z-index: 0;
 }
 .about-slide:not(:nth-child(2))::after {
-    content: url('/down.png');
-    position: absolute;
-    top: 0;
-    right: 1rem;
-    opacity: 0.1;
-    z-index: 0;
-    rotate: 180deg;
+  content: url('/down.png');
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  opacity: 0.1;
+  z-index: 0;
+  rotate: 180deg;
 }
 
 .orbit {
-    animation: spinning 3s infinite linear;
+  animation: spinning 3s infinite linear;
 }
 .orbit-outter {
-    animation: spinning 6s infinite reverse linear;
+  animation: spinning 6s infinite reverse linear;
 }
 
 @keyframes suggest {
-    0%, 100% {transform: translateY(0);}
-    50% {transform: translateY(6px);}
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
 }
 
 @keyframes spinning {
-    from {rotate: 0}
-    to {rotate: 360deg}
+  from {
+    rotate: 0;
+  }
+  to {
+    rotate: 360deg;
+  }
 }

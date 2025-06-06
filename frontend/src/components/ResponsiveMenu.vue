@@ -36,7 +36,7 @@
         <RouterLink
           :to="link.to"
           class="block px-3 py-2 w-full md:w-fit text-3xl md:text-base lg:text-lg underline-offset-4 hover:underline decoration-cyan-800 decoration-4 hover:decoration-zinc-600"
-          :class="{ 'underline': $route.path === link.to }"
+          :class="{ underline: $route.path === link.to }"
           @click="closeIfMobile"
         >
           {{ link.label }}
@@ -47,35 +47,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import menuIcon from '@/assets/menu.svg';
-import closeIcon from '@/assets/close.svg';
+import { ref, watch } from 'vue'
+import menuIcon from '@/assets/menu.svg'
+import closeIcon from '@/assets/close.svg'
 
-const isOpen = ref(false);
+const isOpen = ref(false)
 
 const toggleOpen = () => {
-  isOpen.value = !isOpen.value;
-};
+  isOpen.value = !isOpen.value
+}
 
 const closeIfMobile = () => {
-  if (window.innerWidth < 768) isOpen.value = false;
-};
+  if (window.innerWidth < 768) isOpen.value = false
+}
 
 // Optional: prevent background scroll on mobile menu open
 watch(isOpen, (open) => {
   if (open) {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'
   } else {
-    document.body.style.overflow = '';
+    document.body.style.overflow = ''
   }
-});
+})
 
 const links = [
   { to: '/', label: 'Home' },
   { to: '/explore', label: 'Explore' },
   { to: '/library', label: 'Library' },
   { to: '/about', label: 'About' },
-];
+]
 </script>
 
 <style scoped>
