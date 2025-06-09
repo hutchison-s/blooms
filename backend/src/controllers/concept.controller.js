@@ -15,7 +15,15 @@ const BOOLS = ['false', 'true']
 */
 export async function find(req, res) {
     const baseUrl = `${req.protocol}://${req.get('host')}/concepts`;
-    const { subject, search, grade, sortby = 'concept', ascending = 'true', page = 1, limit = DEFAULT_LIMIT } = req.query;
+    const { 
+        subject, 
+        search, 
+        grade, 
+        sortby = 'concept', 
+        ascending = 'true', 
+        page = 1, 
+        limit = DEFAULT_LIMIT 
+    } = req.query;
 
     const pageNum = Number(page);
     const limitNum = Number(limit);

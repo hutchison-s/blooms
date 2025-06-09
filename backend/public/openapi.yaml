@@ -1,11 +1,11 @@
 openapi: 3.0.3
 info:
-  title: Concepts API
+  title: BloomExplorer API
   version: 1.0.0
-  description: API endpoints for managing educational concepts
+  description: API endpoints for BloomExplorer read-only database. Filled with Bloom's Taxonomy questions and prompts for over 2000 topics and 200+ books.
 
 servers:
-  - url: https://www.bloomexplorer.xyz/api/
+  - url: https://api.bloomexplorer.xyz/
 
 paths:
   /concepts:

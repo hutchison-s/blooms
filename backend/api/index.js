@@ -8,6 +8,12 @@ import AdminRouter from '../src/routes/admin.router.js';
 import { admin_check } from '../src/middleware/admin_check.js';
 import cacheFor24Hours from '../src/middleware/cache.js';
 import rateLimit from 'express-rate-limit';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url); // Get current filename
+const __dirname = path.dirname(__filename); // Get current directory name
+
 
 const limiter = rateLimit({
   windowMs: 2 * 60 * 1000, // 2 minutes
@@ -25,11 +31,17 @@ app.use(express.json());
 // Connect to DB
 connectMongoose();
 
+app.use(express.static(path.join(__dirname, '../public')));
+
+app.get('/' || '/api-docs', (req, res)=>{
+  res.sendFile(path.join(__dirname, '../public', 'api-docs.html'));
+});
 
 // Connect router to admin endpoint
 app.use('/admin', admin_check, AdminRouter);
 
 // Apply rate limiting to all non-admin requests
+app.set('trust proxy', 1);
 app.use(limiter);
 
 // Connect router to concepts endpoint
