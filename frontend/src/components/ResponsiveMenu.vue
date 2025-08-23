@@ -42,16 +42,22 @@
           {{ link.label }}
         </RouterLink>
       </li>
+      <li v-if="isMobile" class="pt-12">
+        <a href="https://buymeacoffee.com/stevenhutchisonkc" target="_blank" class="mx-auto w-fit px-6 py-2 bg-purple-600 rounded-full text-md text-white shadow-md cursor-pointer" on>
+          Buy Me a Coffee
+        </a>
+      </li>
     </ul>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import menuIcon from '@/assets/menu.svg'
 import closeIcon from '@/assets/close.svg'
 
 const isOpen = ref(false)
+const isMobile = ref(window.innerWidth < 768)
 
 const toggleOpen = () => {
   isOpen.value = !isOpen.value
@@ -60,6 +66,19 @@ const toggleOpen = () => {
 const closeIfMobile = () => {
   if (window.innerWidth < 768) isOpen.value = false
 }
+
+
+function handleResize() {
+  isMobile.value = window.innerWidth < 768
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
 
 // Optional: prevent background scroll on mobile menu open
 watch(isOpen, (open) => {
