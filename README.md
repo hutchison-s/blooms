@@ -1,6 +1,8 @@
 # 📘 Bloom Explorer
 
-An educational web application that serves curriculum-aligned content and questions based on **Bloom’s Taxonomy**. Built with a Vue frontend and a Node.js + Express backend, the app fetches and displays question sets from a MongoDB database categorized by grade level and concept.
+An educational web application that serves curriculum-aligned content and questions based on **Bloom’s Taxonomy**. Built with a Vue frontend and a Node.js + Express backend, the app fetches and displays question sets from a MongoDB database categorized by grade level and topic.
+
+[Buy Me a Coffee](https://buymeacoffee.com/stevenhutchisonkc)
 
 ---
 
