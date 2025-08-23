@@ -11,15 +11,23 @@
     <p
       class="font-light text-xl sm:text-2xl md:text-3xl lg:text-5xl leading-relaxed ml-4 px-[10vw] text-center"
     >
-      {{ question }}
+      <MathCleaner :content="question" />
     </p>
   </article>
 </template>
 
 <script setup lang="ts">
 import { levelColorMap } from '@/assets/helpers'
+import MathCleaner from './MathCleaner.vue';
 defineProps<{
   title: string
   question: string
 }>()
 </script>
+
+<style>
+  .MathJax {
+    color: rgb(207, 233, 185);
+    text-shadow: 0 0 10px #00000055;
+  }
+</style>
