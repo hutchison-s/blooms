@@ -11,7 +11,7 @@ const el = ref<HTMLElement>()
 
 async function renderMath() {
   const MathJax = await loadMathJax()
-  if (el.value) {
+  if (el.value && MathJax.typesetPromise) {
     await MathJax.typesetPromise([el.value])
   }
 }
