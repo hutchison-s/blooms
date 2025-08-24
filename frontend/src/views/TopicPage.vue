@@ -13,12 +13,24 @@
               <p class="italic font-light text-lg"><GradePill :grade="topic.gradeLevel" /></p>
               <SubjectIcon :subject="topic.subjectArea" class="opacity-70" />
             </div>
-            <button
-              @click="router.back()"
-              class="block font-light text-sm md:text-xl border-1 border-zinc-300 rounded px-3 py-1"
-            >
-              &larr;&nbsp;Go&nbsp;back
-            </button>
+            <div class="flex gap-2">
+              <button @click="handleCopy" class="opacity-80 hover:opacity-100 active:opacity-50">
+                <img
+                  title="Copy to Clipboard"
+                  :src="copyIcon"
+                  alt="Copy"
+                  width="40px"
+                  height="40px"
+                  class="invert size-8 md:size-12 "
+                />
+              </button>
+              <button
+                @click="router.back()"
+                class="block font-light text-sm md:text-xl border-1 border-zinc-300 rounded px-3 py-1"
+              >
+                &larr;&nbsp;Go&nbsp;back
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -35,6 +47,7 @@
   <section v-else class="w-full h-full">
     <LogoLoader />
   </section>
+  
 </template>
 
 <script setup lang="ts">
@@ -46,10 +59,15 @@ import TopicLevel from '@/components/topics/TopicLevel.vue'
 import SubjectIcon from '@/components/SubjectIcon.vue'
 import LogoLoader from '@/components/LogoLoader.vue'
 import GradePill from '@/components/GradePill.vue'
+import {copyTopic} from '@/lib/CopyToClipboard'
+import copyIcon from '@/assets/copy-icon.svg'
+import { useToast } from '@/lib/Toast'
+
 const route = useRoute()
 const router = useRouter()
 const { grade, subject, slug } = route.params
 const topic = ref<Topic>()
+const {show} = useToast()
 
 const baseURL = import.meta.env.VITE_API_BASE + '/concepts'
 
@@ -61,6 +79,20 @@ const bloomLevels: BookBloomLevel[] = [
   'synthesis',
   'evaluation',
 ]
+
+function handleCopy() {
+  if (!topic.value) return
+  const link = `${window.location}`
+  topic.value.url = link
+  try {
+    copyTopic(topic.value)
+    show('Copied to clipboard!', {type: 'success', duration: 1000})
+  } catch (err) {
+    console.error(err)
+    show('Failed to copy', {type: 'error', duration: 2000})
+    return
+  }
+}
 
 onMounted(async () => {
   const result = await fetch(`${baseURL}/${grade}/${subject}/${slug}`)
